@@ -1,12 +1,12 @@
 ---
-title: Naming Conventions & Planning
+title: Step 00 - Naming Conventions & Planning
 description: Define consistent naming patterns for all Azure resources in AVD deployment
 published: true
 date: 2025-12-14
 tags: [Quick-Deploy, naming, planning]
 ---
 
-# Step 0: Naming Conventions & Planning
+# Step 00: Naming Conventions & Planning
 
 **Portal Path:** N/A - Planning step (no Portal actions required)
 

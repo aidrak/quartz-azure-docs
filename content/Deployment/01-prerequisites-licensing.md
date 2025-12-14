@@ -1,5 +1,5 @@
 ---
-title: Quick Deploy - Prerequisites & Licensing
+title: Step 01 - Prerequisites & Licensing
 description: Verify subscriptions, licenses, and make key architectural decisions
 published: true
 date: 2025-12-14
@@ -7,7 +7,7 @@ tags:
 editor: markdown
 ---
 
-# Step 1: Prerequisites & Licensing
+# Step 01: Prerequisites & Licensing
 
 Verify Azure subscription access, licensing entitlements, and make critical architectural decisions before deployment. This step prevents mid-deployment blockers and ensures compliance.
 
