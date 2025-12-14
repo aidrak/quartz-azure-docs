@@ -25,7 +25,7 @@ We're deploying Azure Virtual Desktop for a medium enterprise with ~200 users ac
 - **Creative** (30 users) - Personal single-session host pool
 - **Executives** (10 users) - Personal single-session host pool
 
-**Environment:** Production, East US region
+**Environment:** Production
 **Storage:** Azure Files with FSLogix profile containers
 **Management:** Intune with Entra ID Join
 **Deployment Timeline:** Q1 2025
@@ -57,30 +57,26 @@ All resource names follow these principles:
 
 ### Resource Groups
 
-**Pattern:** `rg-avd-{env}-{region}-{num}`
+**Pattern:** `rg-avd-{env}-{num}`
 
-| Environment | Region | Example | Purpose |
-|-------------|--------|---------|---------|
-| prod | eastus | `rg-avd-prod-eastus-01` | Production pooled resources |
-| nonprod/dev | eastus | `rg-avd-dev-eastus-01` | Development/testing |
+| Environment | Example | Purpose |
+|-------------|---------|---------|
+| prod | `rg-avd-prod-01` | Production pooled resources |
+| nonprod/dev | `rg-avd-dev-01` | Development/testing |
 
 **Pooled + Personal Example:**
-- `rg-avd-prod-eastus-01` contains pooled host pools, personal host pools, and shared infrastructure
+- `rg-avd-prod-01` contains pooled host pools, personal host pools, and shared infrastructure
 - All resources deploy to same RG to simplify management and RBAC
-
-**Regional Variant (if multi-region later):**
-- `rg-avd-prod-eastus-01` (primary)
-- `rg-avd-prod-westus-01` (secondary, if needed)
 
 ---
 
 ### Virtual Networks (VNETs)
 
-**Pattern:** `vnet-avd-{env}-{region}-{num}`
+**Pattern:** `vnet-avd-{env}-{num}`
 
 | Resource | Example | CIDR | Purpose |
 |----------|---------|------|---------|
-| Production VNET | `vnet-avd-prod-eastus-01` | 10.0.0.0/16 | All session hosts + infrastructure |
+| Production VNET | `vnet-avd-prod-01` | 10.0.0.0/16 | All session hosts + infrastructure |
 
 **Subnets within VNET:**
 
@@ -168,7 +164,7 @@ Naming keeps focus on TYPE (pooled vs personal) and ENVIRONMENT. Host pool names
 
 ### Workspaces
 
-**Pattern:** `ws-{env}` or `ws-{env}-{region}`
+**Pattern:** `ws-{env}`
 
 | Workspace | Example | Assigned AppGroups | Usage |
 |-----------|---------|-------------------|-------|
@@ -176,9 +172,6 @@ Naming keeps focus on TYPE (pooled vs personal) and ENVIRONMENT. Host pool names
 
 > **Single Workspace Approach:** One workspace aggregates all AppGroups. Users see one "workspace" with pooled AND personal desktops depending on their group membership.
 
-**If multi-region future:**
-- `ws-prod-eastus`
-- `ws-prod-westus`
 
 ---
 
@@ -244,14 +237,13 @@ Azure storage account names: lowercase only, 24 chars max, no hyphens.
 
 | Storage Account | Example | Purpose | Tier |
 |-----------------|---------|---------|------|
-| AVD Profiles | `stavdprodeus01` | FSLogix profile containers + MSIX app attach | Premium (SMB 3.1.1) |
-| Backup (future) | `stbackupprodeus01` | VM snapshots, backups | Standard |
+| AVD Profiles | `stavdprod01` | FSLogix profile containers + MSIX app attach | Premium (SMB 3.1.1) |
+| Backup (future) | `stbackupprod01` | VM snapshots, backups | Standard |
 
-**Breakdown of `stavdprodeus01`:**
+**Breakdown of `stavdprod01`:**
 - `st` = storage account
 - `avd` = purpose
 - `prod` = environment
-- `eus` = region (eastus)
 - `01` = instance number (if multiple needed)
 
 ---
@@ -279,11 +271,11 @@ Azure storage account names: lowercase only, 24 chars max, no hyphens.
 
 ### Azure Compute Gallery
 
-**Pattern:** `gal-avd-{env}-{region}-{num}`
+**Pattern:** `gal-avd-{env}-{num}`
 
 | Gallery | Example | Shared With | Purpose |
 |---------|---------|------------|---------|
-| Production | `gal-avd-prod-eus-01` | Current subscription (shared to multiple subnets if needed) | Custom Windows 11 images |
+| Production | `gal-avd-prod-01` | Current subscription (shared to multiple subnets if needed) | Custom Windows 11 images |
 
 ---
 
@@ -307,11 +299,11 @@ Azure storage account names: lowercase only, 24 chars max, no hyphens.
 
 ### Log Analytics Workspace
 
-**Pattern:** `law-avd-{env}-{region}-{num}`
+**Pattern:** `law-avd-{env}-{num}`
 
 | Workspace | Example | Linked To | Retention |
 |-----------|---------|-----------|-----------|
-| Production | `law-avd-prod-eus-01` | All session hosts (via Intune) | 30 days |
+| Production | `law-avd-prod-01` | All session hosts (via Intune) | 30 days |
 
 **Connected Data Sources:**
 - Windows Event Logs (System, Application)
@@ -365,8 +357,8 @@ If later automating start/stop or scaling:
 |---|---------------|----------|-----------------|----------|
 | **Core Infrastructure** |
 | 1 | Subscription | 1 | `sub-{org}-{env}-{purpose}` | `sub-aidrak-prod-avd` |
-| 2 | Resource Group | 1 | `rg-avd-{env}-{region}-{num}` | `rg-avd-prod-eastus-01` |
-| 3 | Virtual Network | 1 | `vnet-avd-{env}-{region}-{num}` | `vnet-avd-prod-eastus-01` |
+| 2 | Resource Group | 1 | `rg-avd-{env}-{num}` | `rg-avd-prod-01` |
+| 3 | Virtual Network | 1 | `vnet-avd-{env}-{num}` | `vnet-avd-prod-01` |
 | 4 | Subnet (session hosts) | 1 | `snet-avd-{env}-{purpose}` | `snet-avd-prod-sessionhosts` |
 | 5 | Subnet (private endpoints) | 1 | `snet-avd-{env}-{purpose}` | `snet-avd-prod-privateendpoints` |
 | 6 | NSG (session hosts) | 1 | `nsg-avd-{env}-{purpose}` | `nsg-avd-prod-sessionhosts` |
@@ -381,12 +373,12 @@ If later automating start/stop or scaling:
 | 14 | Application Group (personal) | 1 | `ag-{type}-{env}` | `ag-personal-prod` |
 | 15 | Workspace | 1 | `ws-{env}` | `ws-prod` |
 | **Storage & Profiles** |
-| 16 | Storage Account (profiles) | 1 | `st{purpose}{env}{num}` | `stavdprodeus01` |
+| 16 | Storage Account (profiles) | 1 | `st{purpose}{env}{num}` | `stavdprod01` |
 | 17 | File Share (pooled profiles) | 1 | `profiles-{type}` | `profiles-pooled` |
 | 18 | File Share (personal profiles) | 1 | `profiles-{type}` | `profiles-personal` |
 | 19 | Private Endpoint (storage) | 1 | `pe-{resource}-{env}` | `pe-storage-prod` |
 | **Images & Gallery** |
-| 20 | Azure Compute Gallery | 1 | `gal-avd-{env}-{region}-{num}` | `gal-avd-prod-eus-01` |
+| 20 | Azure Compute Gallery | 1 | `gal-avd-{env}-{num}` | `gal-avd-prod-01` |
 | 21 | Image Definition (multi-session) | 1 | `win{ver}-{type}-{purpose}` | `win11-multisession-23h2` |
 | 22 | Image Definition (single-session) | 1 | `win{ver}-{type}-{purpose}` | `win11-singlesession-23h2` |
 | **Identity (Entra ID)** |
@@ -397,7 +389,7 @@ If later automating start/stop or scaling:
 | 27 | Device Group (personal) | 1 | `AVD-Devices-{Type}` | `AVD-Devices-Personal` (40 VMs) |
 | 28 | Conditional Access Policy | 2-3 | `CA-AVD-{type}-{condition}` | `CA-AVD-MFA-Required` |
 | **Monitoring** |
-| 29 | Log Analytics Workspace | 1 | `law-avd-{env}-{region}-{num}` | `law-avd-prod-eus-01` |
+| 29 | Log Analytics Workspace | 1 | `law-avd-{env}-{num}` | `law-avd-prod-01` |
 | 30 | Azure Monitor Workbook (Insights) | 1 | `workbook-avd-{topic}` | `workbook-avd-insights` |
 | 31 | Azure Monitor Workbook (Connections) | 1 | `workbook-avd-{topic}` | `workbook-avd-connections` |
 | **Security & Keys** |
@@ -415,15 +407,15 @@ If later automating start/stop or scaling:
 
 | Step | Resource Type | Name | Notes |
 |------|---------------|------|-------|
-| 0 | Environment | Production, East US | Planning only |
-| 1-2 | Resource Group | `rg-avd-prod-eastus-01` | Contains all resources |
+| 0 | Environment | Production | Planning only |
+| 1-2 | Resource Group | `rg-avd-prod-01` | Contains all resources |
 | 3 | Subscription | `sub-aidrak-prod-avd` | Document in runbook |
-| 4 | VNET | `vnet-avd-prod-eastus-01` | 10.0.0.0/16 |
+| 4 | VNET | `vnet-avd-prod-01` | 10.0.0.0/16 |
 | 4 | Subnet (hosts) | `snet-avd-prod-sessionhosts` | 10.0.1.0/24 |
 | 4 | Subnet (endpoints) | `snet-avd-prod-privateendpoints` | 10.0.2.0/24 |
 | 4 | NSG (hosts) | `nsg-avd-prod-sessionhosts` | Attached to session host subnet |
 | 4 | NSG (endpoints) | `nsg-avd-prod-privateendpoints` | Attached to private endpoint subnet |
-| 5 | Storage Account | `stavdprodeus01` | FSLogix storage |
+| 5 | Storage Account | `stavdprod01` | FSLogix storage |
 | 5 | File Share (pooled) | `profiles-pooled` | 30GB, in storage account |
 | 5 | File Share (personal) | `profiles-personal` | 50GB, in storage account |
 | 5 | Private Endpoint | `pe-storage-prod` | Optional: secure storage access |
@@ -438,10 +430,10 @@ If later automating start/stop or scaling:
 | 9 | User Group (personal) | `AVD-Personal-Users` | Assigned to `ag-personal-prod` |
 | 9 | Device Group (pooled) | `AVD-Devices-Pooled` | Intune assignment target |
 | 9 | Device Group (personal) | `AVD-Devices-Personal` | Intune assignment target |
-| 3 | Azure Compute Gallery | `gal-avd-prod-eus-01` | Image storage |
+| 3 | Azure Compute Gallery | `gal-avd-prod-01` | Image storage |
 | 3 | Image Def (multi-session) | `win11-multisession-23h2` | For pooled hosts |
 | 3 | Image Def (single-session) | `win11-singlesession-23h2` | For personal hosts |
-| 11 | Log Analytics | `law-avd-prod-eus-01` | Monitoring |
+| 11 | Log Analytics | `law-avd-prod-01` | Monitoring |
 | 11 | Key Vault | `kv-avd-prod` | Secure storage of secrets |
 | 11 | Admin Group | `AVD-Admins` | RBAC on resource group |
 
@@ -451,7 +443,7 @@ If later automating start/stop or scaling:
 
 Before proceeding to Step 1, confirm:
 
-- [ ] **Environment confirmed:** Production, East US region
+- [ ] **Environment confirmed:** Production
 - [ ] **Naming patterns understood:** Can predict name for any resource type
 - [ ] **Example names saved:** Reference table above bookmarked/copied
 - [ ] **Resource count confirmed:** ~32 primary resources for 200 users
@@ -471,7 +463,7 @@ Before proceeding to Step 1, confirm:
 | Random VM numbers (001, 045, 999) | Hard to track growth, predict next VM | Use sequential: 001, 002, 003... |
 | Different naming per resource type | Inconsistent, error-prone | Follow patterns: always `{purpose}-{env}-{num}` |
 | Abbreviating beyond recognition | `stprd01` vs `stavdprodeus01` unclear | Be explicit within Azure limits |
-| Including region in everything | Redundant with resource group location | Only in global resources (storage, gallery) |
+| Including region in names | Adds unnecessary length and complexity | Skip region - it's implicit from deployment location |
 | Descriptive names like "FinalBuild" | Means nothing later, not scalable | Use versioning: v1.0, v1.1, v2.0 |
 
 ---
