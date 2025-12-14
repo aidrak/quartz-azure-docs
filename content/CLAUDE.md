@@ -141,3 +141,7 @@ GitHub Actions auto-builds and deploys to `aidrak.github.io/quartz-azure-docs`.
 5. **Portal-first** - CLI only when Portal can't do it
 6. **Explain WHY** - Best practices include reasoning
 7. **Wikilinks** - Use `[[PageName]]` format for internal links
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md
