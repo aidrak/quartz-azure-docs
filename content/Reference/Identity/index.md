@@ -121,14 +121,14 @@ Before proceeding with AVD deployment, make these identity-related decisions:
 Typical identity setup for a production AVD environment with 200 users:
 
 **User Groups (Dynamic):**
-- `AVD-Pooled-Users` - Automatic assignment based on department (General, Finance)
-- `AVD-Personal-Users` - Automatic assignment for power users (Creative, Executives)
-- `AVD-Users-Admins` - Manual assignment for IT administrators
+- `avd-users-pooled` - Automatic assignment based on department (General, Finance)
+- `avd-users-personal` - Automatic assignment for power users (Creative, Executives)
+- `avd-users-admin` - Manual assignment for IT administrators
 
 **Device Groups (Dynamic):**
-- `AVD-Devices-All` - All session hosts (naming: avd-pool-*, avd-pers-*)
-- `AVD-Devices-Pooled` - Multi-session hosts only (naming: avd-pool-*)
-- `AVD-Devices-Personal` - Single-session hosts only (naming: avd-pers-*)
+- `avd-devices-all` - All session hosts (naming: avd-pool-*, avd-pers-*)
+- `avd-devices-pooled` - Multi-session hosts only (naming: avd-pool-*)
+- `avd-devices-personal` - Single-session hosts only (naming: avd-pers-*)
 
 **Conditional Access Policies:**
 - Policy 1: Require MFA for all AVD users
@@ -136,8 +136,8 @@ Typical identity setup for a production AVD environment with 200 users:
 - Policy 3: Block access from untrusted locations (optional)
 
 **RBAC Assignments:**
-- Desktop Virtualization Contributor: `AVD-Users-Admins` group (resource group scope)
-- Desktop Virtualization User: `AVD-Pooled-Users` and `AVD-Personal-Users` groups (application group scope)
+- Desktop Virtualization Contributor: `avd-users-admin` group (resource group scope)
+- Desktop Virtualization User: `avd-users-pooled` and `avd-users-personal` groups (application group scope)
 
 See [[../../Quick-Deploy/02-identity-setup|Step 02: Identity Setup]] for implementation details.
 

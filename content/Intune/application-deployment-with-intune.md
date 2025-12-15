@@ -448,7 +448,7 @@ Microsoft 365 Apps (Office suite) is the most common app deployed to AVD session
    - Install background service for updates: Yes
 4. **Assign**:
    - Pooled AVD: Install in golden image, not via Intune
-   - Personal AVD: Assign as "Required" to AVD-Users-All group
+   - Personal AVD: Assign as "Required" to avd-users-all group
 
 **Portal:** Intune Admin Center → Apps → Windows → Add → Microsoft 365 Apps
 
@@ -536,10 +536,10 @@ Intune stores uploaded .intunewin packages in Azure Storage. For large app catal
 **Why:** Prevents production outages from installation failures, conflicts, or incorrect detection rules.
 
 **Workflow:**
-1. Create "AVD-Devices-Pilot" dynamic group (test session hosts)
+1. Create "avd-devices-pilot" dynamic group (test session hosts)
 2. Assign new app to pilot group as "Required"
 3. Monitor installation status for 48 hours
-4. If successful, reassign to production group (AVD-Devices-Personal or AVD-Devices-All)
+4. If successful, reassign to production group (avd-devices-personal or avd-devices-all)
 
 **Best Practice:** Maintain 2-5 test session hosts for pilot deployments.
 

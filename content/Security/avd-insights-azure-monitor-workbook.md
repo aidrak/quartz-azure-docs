@@ -63,7 +63,7 @@ az monitor log-analytics workspace show \
 **Resources to Configure**:
 - Host pools (HostPool-VDI-01)
 - Application groups (AppGroup-Desktop, AppGroup-RemoteApp)
-- Workspaces (Workspace-AVD-Prod)
+- Workspaces (workspace-avd-prod)
 
 **Enable Diagnostics**:
 
@@ -143,7 +143,7 @@ done
 ```bash
 # Link VM to DCR
 az monitor data-collection rule association create \
-  --name AVD-Insights-Association \
+  --name avd-insights-association \
   --rule-id /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/dataCollectionRules/microsoft-avdi-centralus \
   --resource /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Compute/virtualMachines/avd-pool-0
 ```
@@ -473,7 +473,7 @@ AVD Insights data in Log Analytics powers alert rules:
 
 ```bash
 az monitor metrics alert create \
-  --name "AVD-Low-Success-Rate" \
+  --name "avd-low-success-rate" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.OperationalInsights/workspaces/log-avd-prod \
   --condition "count 'WVDConnections' where State == 'Failed'" \

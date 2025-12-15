@@ -443,10 +443,10 @@ az network private-endpoint create \
 ### Step 4: Assign RBAC to User Groups on Secondary
 
 ```bash
-# Same groups as primary (AVD-Users-Pooled, AVD-Users-Personal)
+# Same groups as primary (avd-users-pooled, avd-users-personal)
 az role assignment create \
   --role "Storage File Data SMB Share Contributor" \
-  --assignee-object-id $(az ad group show --group "AVD-Users-Pooled" --query id -o tsv) \
+  --assignee-object-id $(az ad group show --group "avd-users-pooled" --query id -o tsv) \
   --scope "/subscriptions/<sub-id>/resourceGroups/RG-Azure-VDI-DR/providers/Microsoft.Storage/storageAccounts/fslogixwestus/fileServices/default/fileshares/profiles"
 ```
 

@@ -97,9 +97,9 @@ Azure Firewall is a managed, cloud-based network security service (FaaS - Firewa
 
 | Priority | Rule Collection | Rule Name | Source | Destination FQDN | Action |
 |----------|-----------------|-----------|--------|------------------|--------|
-| 100 | AVD-Required | Allow-AVD-Control-Plane | 10.0.1.0/24 | *.wvd.microsoft.com, *.servicebus.windows.net | Allow |
-| 110 | AVD-Required | Allow-Windows-Activation | 10.0.1.0/24 | kms.core.windows.net, azkms.core.windows.net | Allow |
-| 120 | AVD-Required | Allow-Azure-Storage | 10.0.1.0/24 | *.blob.core.windows.net, *.table.core.windows.net | Allow |
+| 100 | avd-required | allow-avd-control-plane | 10.0.1.0/24 | *.wvd.microsoft.com, *.servicebus.windows.net | Allow |
+| 110 | avd-required | allow-windows-activation | 10.0.1.0/24 | kms.core.windows.net, azkms.core.windows.net | Allow |
+| 120 | avd-required | allow-azure-storage | 10.0.1.0/24 | *.blob.core.windows.net, *.table.core.windows.net | Allow |
 | 200 | General-Internet | Allow-Windows-Update | 10.0.1.0/24 | *.windowsupdate.com, *.delivery.mp.microsoft.com | Allow |
 | 300 | General-Internet | Allow-Certificate-Validation | 10.0.1.0/24 | *.digicert.com, *.verisign.com | Allow |
 
@@ -150,13 +150,13 @@ Azure Firewall is a managed, cloud-based network security service (FaaS - Firewa
 
 1. Navigate to Firewall Policy (afwp-avd-outbound) → Application Rules → Add Rule Collection
 2. **Rule Collection:**
-   - Name: AVD-Required-HTTPS
+   - Name: avd-required-HTTPS
    - Priority: 100
    - Action: Allow
 
 3. **Add Rules:**
    - Rule 1:
-     - Name: Allow-AVD-Control-Plane
+     - Name: allow-avd-control-plane
      - Source Type: IP Address
      - Source: 10.0.1.0/24
      - Protocol: HTTPS
@@ -164,7 +164,7 @@ Azure Firewall is a managed, cloud-based network security service (FaaS - Firewa
      - Destination: *.wvd.microsoft.com, *.servicebus.windows.net
 
    - Rule 2:
-     - Name: Allow-Windows-Activation
+     - Name: allow-windows-activation
      - Source: 10.0.1.0/24
      - Protocol: HTTPS
      - Destination Type: FQDN
@@ -237,17 +237,17 @@ az network firewall policy create \
 az network firewall policy rule-collection-group create \
   --resource-group RG-Azure-Hub \
   --policy-name afwp-avd-outbound \
-  --name AVD-Required-Rules \
+  --name avd-required-Rules \
   --priority 100
 
 az network firewall policy rule-collection-group collection add-filter-collection \
   --resource-group RG-Azure-Hub \
   --policy-name afwp-avd-outbound \
-  --rule-collection-group-name AVD-Required-Rules \
-  --name AVD-HTTPS \
+  --rule-collection-group-name avd-required-Rules \
+  --name avd-https \
   --collection-priority 100 \
   --action Allow \
-  --rule-name Allow-AVD-Control-Plane \
+  --rule-name allow-avd-control-plane \
   --rule-type ApplicationRule \
   --source-addresses 10.0.1.0/24 \
   --protocols Https=443 \
@@ -278,7 +278,7 @@ az network vnet subnet update \
 
 **Rule Organization:**
 - **Use Firewall Policies:** Not classic rules (policies support inheritance, versioning)
-- **Rule Collections by Purpose:** AVD-Required, Windows-Updates, LOB-Apps (separate collections)
+- **Rule Collections by Purpose:** avd-required, windows-updates, lob-apps (separate collections)
 - **Priority Ranges:** 100-199 critical, 200-299 standard, 300+ optional
 - **FQDN Tags:** Use built-in tags (WindowsUpdate, AzureBackup) instead of manual FQDNs
 

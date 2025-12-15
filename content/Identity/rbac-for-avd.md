@@ -47,7 +47,7 @@ For AVD, this means separating administrative access (who can create/modify host
 3. **Members tab:**
    - Assign access to: **User, group, or service principal**
    - Click **+ Select members**
-   - Search for and select Entra ID group (e.g., "SG-AVD-Admins")
+   - Search for and select Entra ID group (e.g., "sg-avd-admins")
    - Click **Next**
 4. **Conditions tab** (optional):
    - Leave default unless implementing ABAC
@@ -64,7 +64,7 @@ For AVD, this means separating administrative access (who can create/modify host
 3. Click **Next**
 4. **Members tab:**
    - Assign access to: **User, group, or service principal**
-   - Select Entra ID group containing AVD users (e.g., "SG-AVD-Finance-Users")
+   - Select Entra ID group containing AVD users (e.g., "sg-finance-avd-users")
    - Click **Next**
 5. Click **Review + assign**
 
@@ -75,22 +75,22 @@ For AVD, this means separating administrative access (who can create/modify host
 **Subscription level:**
 ```
 Subscription (AVD-Production)
-└── Desktop Virtualization Contributor → SG-AVD-GlobalAdmins
+└── Desktop Virtualization Contributor → sg-avd-globaladmins
 ```
 Use for: Platform team managing all AVD resources
 
 **Resource group level:**
 ```
 Resource Group (RG-AVD-Finance)
-├── Desktop Virtualization Contributor → SG-AVD-Finance-Admins
-└── Desktop Virtualization Reader → SG-AVD-Finance-Support
+├── Desktop Virtualization Contributor → sg-avd-finance-admins
+└── Desktop Virtualization Reader → sg-avd-finance-support
 ```
 Use for: Department-specific admin teams
 
 **Application group level:**
 ```
 Application Group (Finance-Desktop-AppGroup)
-└── Desktop Virtualization User → SG-Finance-AVD-Users
+└── Desktop Virtualization User → sg-finance-avd-users
 ```
 Use for: End user connection access (always at this scope)
 
@@ -103,9 +103,9 @@ Use for: End user connection access (always at this scope)
 - **Use Desktop Virtualization User for end users** - This is the ONLY role that should be assigned to end users; all other roles are for administrators
 
 - **Separate admin roles by function** - Create different groups for different admin responsibilities:
-  - `SG-AVD-Admins` → Desktop Virtualization Contributor (full control)
-  - `SG-AVD-HelpDesk` → Desktop Virtualization Session Host Operator (user session management)
-  - `SG-AVD-Auditors` → Desktop Virtualization Reader (view-only access)
+  - `sg-avd-admins` → Desktop Virtualization Contributor (full control)
+  - `sg-avd-helpdesk` → Desktop Virtualization Session Host Operator (user session management)
+  - `sg-avd-auditors` → Desktop Virtualization Reader (view-only access)
 
 - **Apply roles at appropriate scope** - Use resource group scope for most admin roles, application group scope for Desktop Virtualization User role
 
@@ -125,7 +125,7 @@ Use for: End user connection access (always at this scope)
 **Requirement:** Three admins need full control of AVD in RG-AVD-Pilot
 
 **Solution:**
-1. Create Entra ID group: `SG-AVD-Pilot-Admins`
+1. Create Entra ID group: `sg-avd-pilot-admins`
 2. Add three admin users to group
 3. Assign Desktop Virtualization Contributor role to group at RG-AVD-Pilot scope
 4. Assign Contributor role at RG-AVD-Pilot scope (for underlying VMs, storage, networking)
@@ -134,15 +134,15 @@ Use for: End user connection access (always at this scope)
 **Requirement:** Finance users need access to Finance-Desktop app group, HR users need access to HR-Desktop app group
 
 **Solution:**
-1. Create groups: `SG-Finance-AVD-Users`, `SG-HR-AVD-Users`
-2. Assign Desktop Virtualization User to `SG-Finance-AVD-Users` at Finance-Desktop-AppGroup scope
-3. Assign Desktop Virtualization User to `SG-HR-AVD-Users` at HR-Desktop-AppGroup scope
+1. Create groups: `sg-finance-avd-users`, `sg-hr-avd-users`
+2. Assign Desktop Virtualization User to `sg-finance-avd-users` at Finance-Desktop-AppGroup scope
+3. Assign Desktop Virtualization User to `sg-hr-avd-users` at HR-Desktop-AppGroup scope
 
 ### Scenario: Help Desk Session Management
 **Requirement:** Help desk needs to drain session hosts and log off users, but not modify host pool configuration
 
 **Solution:**
-1. Create group: `SG-AVD-HelpDesk`
+1. Create group: `sg-avd-helpdesk`
 2. Assign Desktop Virtualization Session Host Operator role at host pool scope
 3. Do NOT assign Contributor or Host Pool Contributor roles
 
@@ -150,7 +150,7 @@ Use for: End user connection access (always at this scope)
 **Requirement:** Compliance team needs to view all AVD configurations but make no changes
 
 **Solution:**
-1. Create group: `SG-AVD-Auditors`
+1. Create group: `sg-avd-auditors`
 2. Assign Desktop Virtualization Reader role at subscription or resource group scope
 3. Assign Reader role (standard Azure role) for underlying resources
 

@@ -32,7 +32,7 @@ The goal is to install everything once, capture it as an image, and deploy hundr
 
 ### 1. Create Base VM from Marketplace
 
-**Azure Portal Path:** Azure Portal → Create a resource → Virtual machine
+**Azure Portal Path:** Azure Portal → Virtual machine
 
 **Configuration:**
 - **Resource Group:** Use a dedicated "Image Management" RG (e.g., `RG-ImageBuild-Prod`)

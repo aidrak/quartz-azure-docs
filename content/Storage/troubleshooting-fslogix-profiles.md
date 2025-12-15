@@ -180,7 +180,7 @@ Check FSLogix log for:
 ```
 
 **Solution:**
-- Verify user is member of AVD-Users-Pooled or AVD-Users-Personal group
+- Verify user is member of avd-users-pooled or avd-users-personal group
 - Verify group has RBAC role "Storage File Data SMB Share Contributor"
 - Verify NTFS permissions on share root allow "Modify" for user group
 
@@ -188,7 +188,7 @@ Check FSLogix log for:
 # Check RBAC assignment
 az role assignment list \
   --scope "/subscriptions/<sub-id>/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Storage/storageAccounts/fslogix121025/fileServices/default/fileshares/profiles" \
-  --query "[?principalName=='AVD-Users-Pooled']"
+  --query "[?principalName=='avd-users-pooled']"
 ```
 
 **Cause 4: Network Connectivity Issue**
@@ -730,7 +730,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "LogLevel" -Value
 Set-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "LogLevel" -Value 3 -Type DWord
 ```
 
-**Test with Known-Good User Account** - When troubleshooting permissions, create a test user account, assign to AVD-Users group, attempt logon. Eliminates user-specific Entra ID issues (stale cached credentials, group membership propagation delays).
+**Test with Known-Good User Account** - When troubleshooting permissions, create a test user account, assign to avd-users group, attempt logon. Eliminates user-specific Entra ID issues (stale cached credentials, group membership propagation delays).
 
 **Always Check Both RBAC and NTFS** - Profile access requires RBAC role (share-level) AND NTFS permissions (file-level). Common mistake: Fixing one but not the other. Verify both layers when troubleshooting access denied errors.
 
@@ -753,7 +753,7 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\FSLogix\Profiles" -Name "LogLevel" -Value
 | Profile corruption | CHKDSK on VHD | File system corruption | Run CHKDSK /F /R, restore from backup |
 | Duplicate profiles | Folder naming pattern | FlipFlopProfileDirectoryName mismatch | Standardize folder naming, merge profiles |
 | Slow application performance | Antivirus exclusions | AV scanning VHD files | Add FSLogix paths/extensions to exclusions |
-| Cannot create profile folder | NTFS permissions on root | Missing Modify permission | Grant Modify to AVD-Users on share root |
+| Cannot create profile folder | NTFS permissions on root | Missing Modify permission | Grant Modify to avd-users on share root |
 
 > **Warning:** Never delete a user's profile VHD without confirming backup exists or user approval. Profile contains all user data (Desktop files, Documents, browser favorites, application settings). Deletion is irreversible without backup.
 

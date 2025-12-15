@@ -178,10 +178,10 @@ The RG-Azure-VDI-01 resource group uses **Entra Join** for session hosts in host
 6. **Scalability** - Entra ID autoscale and Intune policies apply instantly to new session hosts without waiting for AD replication.
 
 **Device Groups (all Entra Joined):**
-- `AVD-Devices-All`: All session hosts (dynamic membership)
-- `AVD-Devices-Pooled`: Pooled host pool VMs
-- `AVD-Devices-Personal`: Personal host pool VMs
-- `AVD-SessionHosts-SSO`: Devices enabled for Entra SSO
+- `avd-devices-all`: All session hosts (dynamic membership)
+- `avd-devices-pooled`: Pooled host pool VMs
+- `avd-devices-personal`: Personal host pool VMs
+- `avd-sessionhosts-sso`: Devices enabled for Entra SSO
 
 These groups are dynamic, populated by rules like:
 ```

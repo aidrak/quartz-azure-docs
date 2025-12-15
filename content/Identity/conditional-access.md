@@ -38,7 +38,7 @@ Policies follow an if-then model: **if** a user wants to access a resource, **th
    - Name: "AVD - Require MFA and Compliant Device"
 
 2. **Assignments - Users**
-   - Include: Select specific groups (e.g., "SG-AVD-Users")
+   - Include: Select specific groups (e.g., "sg-avd-users")
    - Exclude: Emergency access accounts (break-glass accounts)
 
 3. **Assignments - Target resources**

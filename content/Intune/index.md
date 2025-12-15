@@ -69,6 +69,23 @@ Covers Win32 app packaging, deployment strategies, and application management fo
 
 **When to Read:** When deploying applications to personal AVD hosts. For pooled hosts, install apps in the golden image instead.
 
+### [[remediation-scripts/index|Intune Proactive Remediation Scripts]]
+
+Collection of PowerShell detection and remediation scripts for automatically fixing configuration drift on AVD session hosts.
+
+**Included Scripts:**
+- **Drive Mapping Task** - Detect and remediate scheduled task for network drive mapping
+- **Notifications Enable** - Enable Windows notifications for specific users or groups
+- **Office Shortcuts** - Deploy and manage Office application shortcuts on the taskbar
+
+**Key Features:**
+- Automatic detection of configuration drift
+- Automatic remediation when issues detected
+- Detailed Intune compliance reporting
+- User-context execution for per-user settings
+
+**When to Use:** Deploy as Intune Proactive Remediations to automatically detect and fix configuration drift on AVD session hosts. Useful for ensuring consistent user experience across pooled and personal hosts without full configuration profiles.
+
 ### [[windows-update-policies-for-avd|Windows Update Policies for AVD]]
 
 Explains Windows Update for Business policies, update rings, and differentiated update strategies for pooled and personal AVD.

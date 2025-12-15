@@ -129,7 +129,7 @@ az vm extension set \
 
 # Associate with Data Collection Rule (DCR)
 az monitor data-collection rule association create \
-  --name AVD-DCR-Association \
+  --name avd-dcr-association \
   --rule-id /subscriptions/{sub-id}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/dataCollectionRules/microsoft-avdi-centralus \
   --resource /subscriptions/{sub-id}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Compute/virtualMachines/avd-pool-0
 ```

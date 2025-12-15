@@ -27,8 +27,8 @@ Dynamic groups automate membership management using rule-based queries against u
 | **Use case** | Small, stable groups | Large, changing groups with consistent attributes |
 
 **Example Scenario:**
-- **Static group:** `AVD-Users-Finance-Assigned` - You manually add each finance user. If someone changes departments, you must remember to remove them.
-- **Dynamic group:** `AVD-Users-Finance-Dynamic` - Rule: `user.department -eq "Finance"`. When HR updates the department attribute, the user is automatically added or removed.
+- **Static group:** `avd-users-finance-assigned` - You manually add each finance user. If someone changes departments, you must remember to remove them.
+- **Dynamic group:** `avd-users-finance-dynamic` - Rule: `user.department -eq "Finance"`. When HR updates the department attribute, the user is automatically added or removed.
 
 ### Licensing Requirements
 
@@ -139,7 +139,7 @@ Our environment uses dynamic groups to automate session host management and user
 
 These groups exist in our RG-Azure-VDI-01 deployment:
 
-#### 1. AVD-Devices-All
+#### 1. avd-devices-all
 
 **Purpose:** Contains all AVD session hosts, regardless of host pool.
 
@@ -153,7 +153,7 @@ These groups exist in our RG-Azure-VDI-01 deployment:
 - Conditional Access policies requiring compliant AVD devices
 - Reporting and inventory queries
 
-#### 2. AVD-Devices-Pooled
+#### 2. avd-devices-pooled
 
 **Purpose:** Only session hosts in pooled host pools (multi-session).
 
@@ -167,7 +167,7 @@ device.displayName -startsWith "avd-pool-prod"
 - Capacity monitoring (alert when pooled hosts exceed threshold)
 - Conditional Access requiring shared device compliance
 
-#### 3. AVD-Devices-Personal
+#### 3. avd-devices-personal
 
 **Purpose:** Only session hosts in personal host pools (dedicated VMs).
 
@@ -181,7 +181,7 @@ device.displayName -startsWith "avd-pers-prod"
 - Backup policies (personal desktops may need VM-level backups)
 - License tracking (personal desktops consume VDA licenses differently)
 
-#### 4. AVD-SessionHosts-SSO
+#### 4. avd-sessionhosts-sso
 
 **Purpose:** Devices configured for Entra ID-based SSO.
 
@@ -205,7 +205,7 @@ Update-MgDevice -DeviceId $device.Id -AdditionalProperties @{extensionAttribute1
 
 ### User Groups by Department or Attribute
 
-#### AVD-Users-Admins
+#### avd-users-admin
 
 **Purpose:** IT administrators who manage AVD infrastructure.
 
@@ -219,7 +219,7 @@ Update-MgDevice -DeviceId $device.Id -AdditionalProperties @{extensionAttribute1
 - Conditional Access allowing admin access from specific locations
 - RemoteApp assignments for management tools
 
-#### AVD-Users-Pooled
+#### avd-users-pooled
 
 **Purpose:** Users assigned to pooled (multi-session) host pools.
 
@@ -240,7 +240,7 @@ Connect-MgGraph -Scopes "User.ReadWrite.All"
 Update-MgUser -UserId "jdoe@contoso.com" -ExtensionAttribute2 "Pooled"
 ```
 
-#### AVD-Users-Personal
+#### avd-users-personal
 
 **Purpose:** Users assigned to personal (dedicated) host pools.
 
@@ -308,7 +308,7 @@ Dynamic group membership is **not instant**. Entra ID processes rules in the bac
 **PowerShell:**
 ```powershell
 Connect-MgGraph -Scopes "Group.Read.All"
-$group = Get-MgGroup -Filter "displayName eq 'AVD-Devices-All'"
+$group = Get-MgGroup -Filter "displayName eq 'avd-devices-all'"
 $group.MembershipRuleProcessingState
 ```
 

@@ -195,7 +195,7 @@ Single-session performance is predictable—each user gets 100% of the VM's reso
 **Win11_Multi_25H2_Gen2:**
 - **OS:** Windows 11 Enterprise multi-session, version 25H2 (build 26100)
 - **Versions:** 1.0.0, 1.0.1, 1.0.2 (monthly updates)
-- **Deployed To:** HP-Pooled-EastUS2 (pooled host pool, breadth-first load balancing)
+- **Deployed To:** hp-pooled-prod (pooled host pool, breadth-first load balancing)
 - **User Count:** 150 users across 12 session hosts (avg 12-13 users per host)
 - **VM Size:** Standard_D4s_v5 (4 vCPU, 16GB RAM)
 - **Software:** FSLogix, M365 Apps (SharedComputerLicensing=1), Adobe Reader, VPN client
@@ -204,7 +204,7 @@ Single-session performance is predictable—each user gets 100% of the VM's reso
 **Win11_Single_25H2_Gen2:**
 - **OS:** Windows 11 Enterprise, version 25H2 (build 26100)
 - **Versions:** 1.0.0 (initial deployment)
-- **Deployed To:** HP-Personal-EastUS2 (personal host pool, direct assignment)
+- **Deployed To:** hp-personal-prod (personal host pool, direct assignment)
 - **User Count:** 20 users (executives, developers)
 - **VM Size:** D8s_v5 (8 vCPU, 32GB RAM) for most, NV6ads_A10_v5 for CAD users
 - **Software:** Same base image as multi-session, but M365 Apps with SharedComputerLicensing=0

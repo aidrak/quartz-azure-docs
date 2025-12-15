@@ -105,7 +105,7 @@ Our Recovery Services Vault: `vault588` in RG-Azure-VDI-01.
 az backup policy create \
   --resource-group RG-Azure-VDI-01 \
   --vault-name vault588 \
-  --name Policy-AVD-PersonalDesktops \
+  --name policy-avd-personal-desktops \
   --backup-management-type AzureIaasVM \
   --policy '{
     "schedulePolicy": {
@@ -147,7 +147,7 @@ az backup protection enable-for-vm \
   --resource-group RG-Azure-VDI-01 \
   --vault-name vault588 \
   --vm avd-personal-jdoe \
-  --policy-name Policy-AVD-PersonalDesktops
+  --policy-name policy-avd-personal-desktops
 ```
 
 **At Scale** (backup all VMs with tag `BackupRequired=true`):
@@ -163,7 +163,7 @@ for vm in $vms; do
     --resource-group RG-Azure-VDI-01 \
     --vault-name vault588 \
     --vm $vm \
-    --policy-name Policy-AVD-PersonalDesktops
+    --policy-name policy-avd-personal-desktops
 done
 ```
 

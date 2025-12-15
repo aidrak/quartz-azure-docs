@@ -201,7 +201,7 @@ az network vnet subnet update \
 - **Lowest Priority for Allow:** Start custom allow rules at 100-200, leave room for exceptions at 50-99
 - **Document Rules:** Use descriptive names (AllowAzureCloudOutbound vs Rule1)
 
-**AVD-Specific Requirements:**
+**avd-specific requirements:**
 - **REQUIRED Outbound:** AzureCloud (AVD control plane), Internet:443 (Windows activation, Azure Storage)
 - **REQUIRED Outbound Ports:** TCP 443 to *.wvd.microsoft.com, gcs.prod.monitoring.core.windows.net
 - **Optional Outbound:** TCP 1688 for KMS activation (usually via Internet:443)

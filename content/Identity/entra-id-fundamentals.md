@@ -124,9 +124,9 @@ AVD session hosts are registered as devices in Entra ID. This enables:
 - `extensionAttribute1-15`: Custom fields for grouping
 
 **Example Device Groups in RG-Azure-VDI-01:**
-- `AVD-Devices-All`: All AVD session hosts
-- `AVD-Devices-Pooled`: Devices for pooled host pools (hp-pooled-prod1)
-- `AVD-Devices-Personal`: Devices for personal host pools (hp-personal-prod1)
+- `avd-devices-all`: All AVD session hosts
+- `avd-devices-pooled`: Devices for pooled host pools (hp-pooled-prod1)
+- `avd-devices-personal`: Devices for personal host pools (hp-personal-prod1)
 
 These groups are populated dynamically based on naming conventions or extension attributes.
 

@@ -70,7 +70,7 @@ All modern Azure VMs use Gen2 Hyper-V firmware, which provides UEFI boot, Secure
 
 ### Creating a Compute Gallery (Portal)
 
-**Azure Portal Path:** Azure Portal → Create a resource → Compute Gallery
+**Azure Portal Path:** Azure Portal → Compute Gallery
 
 1. **Basics Tab:**
    - **Subscription:** Select your Azure subscription

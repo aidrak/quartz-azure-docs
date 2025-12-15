@@ -82,7 +82,7 @@ Update rings control when quality updates and feature updates are deployed to de
 
 **Purpose:** Validate updates before broad deployment
 
-**Assigned To:** AVD-Devices-Pilot (2-5 test session hosts)
+**Assigned To:** avd-devices-pilot (2-5 test session hosts)
 
 **Settings:**
 - Quality Update Deferral: 0 days (install immediately on Patch Tuesday)
@@ -104,7 +104,7 @@ Update rings control when quality updates and feature updates are deployed to de
 
 **Purpose:** Deploy updates to all production session hosts after validation
 
-**Assigned To:** AVD-Devices-Personal (personal AVD hosts only; see note below for pooled AVD)
+**Assigned To:** avd-devices-personal (personal AVD hosts only; see note below for pooled AVD)
 
 **Settings:**
 - Quality Update Deferral: 14 days (wait 2 weeks after Patch Tuesday)
@@ -126,10 +126,10 @@ Update rings control when quality updates and feature updates are deployed to de
 
 **Recommended Approach:**
 
-**Pilot Ring:** Assign to AVD-Devices-Pilot (dynamic group with 2-5 test session hosts)
+**Pilot Ring:** Assign to avd-devices-pilot (dynamic group with 2-5 test session hosts)
 - Example Query: `(device.displayName -startsWith "hp-") -and (device.displayName -contains "test")`
 
-**Production Ring:** Assign to AVD-Devices-Personal (personal AVD hosts only)
+**Production Ring:** Assign to avd-devices-personal (personal AVD hosts only)
 - Example Query: `(device.displayName -contains "personal") -and -not (device.displayName -contains "test")`
 
 **Pooled AVD:** Do not assign update rings (see "Pooled AVD Update Strategy" below)
@@ -144,11 +144,11 @@ Feature update policies allow you to pin devices to a specific Windows version, 
 - **Windows 10 21H2**: Build 19044 (long-term support)
 - **Windows 10 22H2**: Build 19045 (latest Windows 10 feature update, final version)
 - **Windows 11 22H2**: Build 22621 (long-term support)
-- **Windows 11 23H2**: Build 22631 (latest Windows 11 feature update)
+- **Windows 11 25H2**: Build 22631 (latest Windows 11 feature update)
 
 **Rollout Options:**
 - **Make update available as soon as possible**: Deploy immediately to all assigned devices
-- **Make update available on a specific date**: Schedule deployment (e.g., deploy Windows 11 23H2 on January 1, 2024)
+- **Make update available on a specific date**: Schedule deployment (e.g., deploy Windows 11 25H2 on January 1, 2024)
 
 **Portal:** Intune Admin Center → Devices → Windows → Feature Updates for Windows 10 and Later → Create
 
@@ -156,13 +156,13 @@ Feature update policies allow you to pin devices to a specific Windows version, 
 
 **Policy Name:** AVD - Pin to Windows 11 22H2
 
-**Assigned To:** AVD-Devices-Personal
+**Assigned To:** avd-devices-personal
 
 **Settings:**
 - Feature Update to Deploy: Windows 11, version 22H2
 - Rollout Options: Make update available as soon as possible
 
-**Purpose:** Prevent automatic upgrade to Windows 11 23H2, maintaining consistency until 23H2 is validated
+**Purpose:** Prevent automatic upgrade to Windows 11 25H2, maintaining consistency until 25H2 is validated
 
 **Best Practice:** Pin devices to a specific Windows version for 6-12 months, then update policy to next version after validation. This provides stability while ensuring devices remain supported.
 
@@ -176,9 +176,9 @@ Microsoft publishes end-of-support dates for each Windows version. Devices runni
 
 **Windows 11 Versions:**
 - 22H2: End of Support October 8, 2024 (Home/Pro), October 14, 2025 (Enterprise)
-- 23H2: End of Support November 11, 2025 (Home/Pro), November 10, 2026 (Enterprise)
+- 25H2: End of Support November 11, 2025 (Home/Pro), November 10, 2026 (Enterprise)
 
-**Recommendation:** Pin devices to Windows 10 22H2 (if remaining on Windows 10) or Windows 11 22H2/23H2 (if migrating to Windows 11). Plan feature update deployments 3-6 months before end of support.
+**Recommendation:** Pin devices to Windows 10 22H2 (if remaining on Windows 10) or Windows 11 22H2/25H2 (if migrating to Windows 11). Plan feature update deployments 3-6 months before end of support.
 
 ## Driver Update Policies
 
@@ -201,7 +201,7 @@ Driver update policies control automatic driver installation from Windows Update
 
 **Policy Name:** AVD - Driver Updates - Deferred
 
-**Assigned To:** AVD-Devices-All
+**Assigned To:** avd-devices-all
 
 **Settings:**
 - Approval Policy: Automatic
@@ -329,14 +329,14 @@ For personal (persistent) AVD environments, use Intune update rings to deploy up
 ### Recommended Update Rings
 
 **Pilot Ring:**
-- **Assigned To**: AVD-Personal-Pilot (2-5 test users)
+- **Assigned To**: avd-users-pilot (2-5 test users)
 - **Quality Deferral**: 0 days
 - **Feature Deferral**: 60 days
 - **Restart Behavior**: Auto-restart outside active hours
 - **Deadline**: 3 days
 
 **Production Ring:**
-- **Assigned To**: AVD-Devices-Personal
+- **Assigned To**: avd-devices-personal
 - **Quality Deferral**: 14 days
 - **Feature Deferral**: 180 days
 - **Restart Behavior**: Auto-restart outside active hours
@@ -379,7 +379,7 @@ Questions? Contact IT Support.
 - Devices with failed updates
 
 **2. Windows Feature Update Report:**
-- Devices by Windows version (e.g., Windows 11 22H2, Windows 11 23H2)
+- Devices by Windows version (e.g., Windows 11 22H2, Windows 11 25H2)
 - Devices awaiting feature update
 - Devices with failed feature updates
 
@@ -448,7 +448,7 @@ For advanced monitoring, enable Update Compliance workbook in Azure Monitor:
 
 **Why:** Feature updates introduce UI changes, new features, and potential compatibility issues. Pinning to a specific version provides stability while ensuring devices remain supported.
 
-**Recommendation:** Pin to Windows 11 22H2 for 6-12 months, then update to Windows 11 23H2 after validation.
+**Recommendation:** Pin to Windows 11 22H2 for 6-12 months, then update to Windows 11 25H2 after validation.
 
 ### Set Active Hours to Match Business Hours
 

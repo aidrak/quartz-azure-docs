@@ -27,7 +27,7 @@ Azure Monitor alerts consist of three components:
 Monitor Resource → Condition Met → Alert Rule Fires → Action Group Triggered → Notification/Automation
 ```
 
-**Example**: Session host CPU >90% for 10 minutes → Alert "High-CPU-AVD-Pool-0" fires → Action group "AVD-Ops-Team" sends email to ops@contoso.com and creates ServiceNow ticket.
+**Example**: Session host CPU >90% for 10 minutes → Alert "high-cpu-avd-pool-0" fires → Action group "avd-ops-team" sends email to ops@contoso.com and creates ServiceNow ticket.
 
 **Cost**: Alerts are charged per evaluation and notification. Typical AVD deployment: ~$5-20/month for 10-20 alert rules.
 
@@ -48,7 +48,7 @@ Azure Monitor supports three types of alerts, each suited for different monitori
 
 ```bash
 az monitor metrics alert create \
-  --name "High-CPU-AVD-Pool-0" \
+  --name "high-cpu-avd-pool-0" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Compute/virtualMachines/avd-pool-0 \
   --condition "avg Percentage CPU > 80" \
@@ -56,7 +56,7 @@ az monitor metrics alert create \
   --evaluation-frequency 1m \
   --severity 2 \
   --description "Session host avd-pool-0 CPU usage exceeded 80% for 5 minutes" \
-  --action /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/AVD-Ops-Team
+  --action /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/avd-ops-team
 ```
 
 **Use Case**: Monitor session host resource utilization, storage account throttling, network bandwidth.
@@ -83,7 +83,7 @@ az monitor metrics alert create \
 
 ```bash
 az monitor scheduled-query alert create \
-  --name "AVD-Failed-Connections" \
+  --name "avd-failed-connections" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.OperationalInsights/workspaces/log-avd-prod \
   --condition "count > 10" \
@@ -92,7 +92,7 @@ az monitor scheduled-query alert create \
   --evaluation-frequency 5m \
   --severity 2 \
   --description "More than 10 failed AVD connections in 5 minutes" \
-  --action /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/AVD-Ops-Team
+  --action /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/avd-ops-team
 ```
 
 **Advanced Example: Slow Connection Alert**
@@ -130,11 +130,11 @@ WVDConnections
 
 ```bash
 az monitor activity-log alert create \
-  --name "AVD-Session-Host-Deleted" \
+  --name "avd-session-host-deleted" \
   --resource-group RG-Azure-VDI-01 \
   --scope /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01 \
   --condition category=Administrative and operationName=Microsoft.Compute/virtualMachines/delete \
-  --action-group /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/AVD-Security-Team \
+  --action-group /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/avd-security-team \
   --description "Alert when any VM in RG-Azure-VDI-01 is deleted"
 ```
 
@@ -142,11 +142,11 @@ az monitor activity-log alert create \
 
 ```bash
 az monitor activity-log alert create \
-  --name "AVD-NSG-Modified" \
+  --name "avd-nsg-modified" \
   --resource-group RG-Azure-VDI-01 \
   --scope /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Network/networkSecurityGroups/NSG-AVD \
   --condition category=Administrative and operationName=Microsoft.Network/networkSecurityGroups/securityRules/write \
-  --action-group /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/AVD-Security-Team \
+  --action-group /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/avd-security-team \
   --description "Alert when NSG rules are created or modified"
 ```
 
@@ -213,7 +213,7 @@ Action groups define who gets notified and what automation runs when an alert fi
 
 ```json
 {
-  "actionGroupName": "AVD-Ops-Team",
+  "actionGroupName": "avd-ops-team",
   "actions": [
     {
       "actionType": "Webhook",
@@ -272,7 +272,7 @@ if ($currentCount -lt $TargetCapacity) {
 }
 ```
 
-**Trigger**: Alert "AVD-Host-Pool-Capacity-Low" fires when available sessions <10% of total.
+**Trigger**: Alert "avd-host-pool-capacity-low" fires when available sessions <10% of total.
 
 ### ITSM Connector
 
@@ -363,7 +363,7 @@ Event
 **Alert Rule** (Metric):
 ```bash
 az monitor metrics alert create \
-  --name "AVD-Low-Disk-Space" \
+  --name "avd-low-disk-space" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Compute/virtualMachines/avd-pool-0 \
   --condition "avg OS Disk Free Space Percentage < 10" \
@@ -411,7 +411,7 @@ WVDCheckpoints
 **Alert Rule** (Metric):
 ```bash
 az monitor metrics alert create \
-  --name "AVD-High-CPU" \
+  --name "avd-high-cpu" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Compute/virtualMachines/avd-pool-0 \
   --condition "avg Percentage CPU > 80" \
@@ -458,7 +458,7 @@ az monitor alert-processing-rule create \
   --name "Suppress-Alerts-During-Patching" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01 \
-  --filter-alert-rule-name "AVD-High-CPU" "AVD-Session-Host-Unavailable" \
+  --filter-alert-rule-name "avd-high-cpu" "avd-session-host-unavailable" \
   --schedule-type OneTime \
   --schedule-start "2025-12-15T02:00:00Z" \
   --schedule-end "2025-12-15T06:00:00Z" \
@@ -480,18 +480,18 @@ az monitor alert-processing-rule create \
   --name "Route-Connection-Errors-AppTeam" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01 \
-  --filter-alert-rule-name "AVD-Failed-Connections" \
+  --filter-alert-rule-name "avd-failed-connections" \
   --actions AddActionGroups \
-  --action-groups /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/App-Team
+  --action-groups /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/app-team
 
 # Route infrastructure alerts to ops team
 az monitor alert-processing-rule create \
   --name "Route-Infra-Errors-OpsTeam" \
   --resource-group RG-Azure-VDI-01 \
   --scopes /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01 \
-  --filter-alert-rule-name "AVD-High-CPU" "AVD-Low-Disk-Space" \
+  --filter-alert-rule-name "avd-high-cpu" "avd-low-disk-space" \
   --actions AddActionGroups \
-  --action-groups /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/Ops-Team
+  --action-groups /subscriptions/{sub}/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Insights/actionGroups/ops-team
 ```
 
 ### Enrichment (Add Context)
@@ -509,7 +509,7 @@ az monitor alert-processing-rule create \
 
 - **Start with Critical Alerts Only** - Avoid alert fatigue. Focus on alerts that require immediate action (service down, capacity exhausted). Add informational alerts later.
 
-- **Use Action Groups for Teams, Not Individuals** - Create action groups by function (Ops-Team, Security-Team), not person (john@contoso.com). Easier to manage when people change roles.
+- **Use Action Groups for Teams, Not Individuals** - Create action groups by function (ops-team, security-team), not person (john@contoso.com). Easier to manage when people change roles.
 
 - **Test Alerts Before Production** - Fire test alert: Azure Portal → Alert rule → Test → Fire. Verify notifications arrive and automation works.
 
@@ -519,7 +519,7 @@ az monitor alert-processing-rule create \
 
 - **Monitor Alert Volume** - If alert fires >10 times/day, either raise threshold or fix underlying issue. Alerts should be exceptional, not routine.
 
-- **Document Runbooks** - For each alert, create runbook (wiki page) with troubleshooting steps. Example: "AVD-High-CPU alert runbook: 1. Check top processes, 2. Check user count, 3. Resize VM if sustained."
+- **Document Runbooks** - For each alert, create runbook (wiki page) with troubleshooting steps. Example: "avd-high-cpu alert runbook: 1. Check top processes, 2. Check user count, 3. Resize VM if sustained."
 
 - **Review Fired Alerts Weekly** - Look at Alert History in Azure Monitor. Identify noisy alerts (fire frequently but false positives) and tune thresholds.
 

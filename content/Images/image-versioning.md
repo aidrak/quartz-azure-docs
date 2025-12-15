@@ -183,8 +183,8 @@ Keeping every image version forever consumes storage and complicates management.
 ```bash
 # List all versions for an image definition
 az sig image-version list \
-  --resource-group RG-Azure-VDI-01 \
-  --gallery-name avd_gallery \
+  --resource-group rg-avd-prod-01 \
+  --gallery-name gal-avd-prod-01 \
   --gallery-image-definition Win11_Multi_25H2_Gen2 \
   --query "sort_by([].{Name:name, Created:publishingProfile.publishedDate}, &Created)" \
   --output table
@@ -192,8 +192,8 @@ az sig image-version list \
 # Delete old versions (keep last 3)
 # Manual script or Azure Automation Runbook
 versions=$(az sig image-version list \
-  --resource-group RG-Azure-VDI-01 \
-  --gallery-name avd_gallery \
+  --resource-group rg-avd-prod-01 \
+  --gallery-name gal-avd-prod-01 \
   --gallery-image-definition Win11_Multi_25H2_Gen2 \
   --query "sort_by([].name, &@)" -o tsv)
 
@@ -203,8 +203,8 @@ old_versions=$(echo "$versions" | head -n -3)
 for version in $old_versions; do
   echo "Deleting version $version"
   az sig image-version delete \
-    --resource-group RG-Azure-VDI-01 \
-    --gallery-name avd_gallery \
+    --resource-group rg-avd-prod-01 \
+    --gallery-name gal-avd-prod-01 \
     --gallery-image-definition Win11_Multi_25H2_Gen2 \
     --gallery-image-version $version
 done
@@ -220,8 +220,8 @@ For testing or known-bad versions, set `excludeFromLatest: true` to prevent acci
 
 ```bash
 az sig image-version update \
-  --resource-group RG-Azure-VDI-01 \
-  --gallery-name avd_gallery \
+  --resource-group rg-avd-prod-01 \
+  --gallery-name gal-avd-prod-01 \
   --gallery-image-definition Win11_Multi_25H2_Gen2 \
   --gallery-image-version 1.0.3 \
   --exclude-from-latest true
@@ -243,8 +243,8 @@ Set automatic expiration dates on image versions to enforce retention policies.
 
 ```bash
 az sig image-version update \
-  --resource-group RG-Azure-VDI-01 \
-  --gallery-name avd_gallery \
+  --resource-group rg-avd-prod-01 \
+  --gallery-name gal-avd-prod-01 \
   --gallery-image-definition Win11_Multi_25H2_Gen2 \
   --gallery-image-version 1.0.0 \
   --end-of-life-date 2025-04-15
@@ -266,8 +266,8 @@ Creating a new image version is only half the battle—you must also update exis
 # Enable drain mode on 5 hosts (25% of fleet)
 for i in {1..5}; do
   az desktopvirtualization sessionhost update \
-    --resource-group RG-Azure-VDI-01 \
-    --host-pool-name HP-Pooled-EastUS2 \
+    --resource-group rg-avd-prod-01 \
+    --host-pool-name hp-pooled-prod \
     --name "AVD-SH-0$i.domain.com" \
     --allow-new-session false
 done
@@ -280,8 +280,8 @@ done
 ```bash
 # Monitor active sessions
 az desktopvirtualization session-host list \
-  --resource-group RG-Azure-VDI-01 \
-  --host-pool-name HP-Pooled-EastUS2 \
+  --resource-group rg-avd-prod-01 \
+  --host-pool-name hp-pooled-prod \
   --query "[?allowNewSession==\`false\`].{Name:name, Sessions:sessions}" \
   --output table
 ```
@@ -294,14 +294,14 @@ Once sessions reach 0, proceed to deletion.
 for i in {1..5}; do
   # Delete session host registration
   az desktopvirtualization sessionhost delete \
-    --resource-group RG-Azure-VDI-01 \
-    --host-pool-name HP-Pooled-EastUS2 \
+    --resource-group rg-avd-prod-01 \
+    --host-pool-name hp-pooled-prod \
     --name "AVD-SH-0$i.domain.com" \
     --yes
 
   # Delete underlying VM
   az vm delete \
-    --resource-group RG-Azure-VDI-01 \
+    --resource-group rg-avd-prod-01 \
     --name "AVD-SH-0$i" \
     --yes
 done
@@ -312,10 +312,10 @@ done
 ```bash
 # Deploy 5 new session hosts using image version 1.0.2
 az deployment group create \
-  --resource-group RG-Azure-VDI-01 \
+  --resource-group rg-avd-prod-01 \
   --template-file deploy-session-hosts.json \
   --parameters \
-    hostPoolName=HP-Pooled-EastUS2 \
+    hostPoolName=hp-pooled-prod \
     vmCount=5 \
     vmNamePrefix=AVD-SH- \
     imageVersion=1.0.2 \
@@ -326,8 +326,8 @@ az deployment group create \
 
 ```bash
 az desktopvirtualization session-host list \
-  --resource-group RG-Azure-VDI-01 \
-  --host-pool-name HP-Pooled-EastUS2 \
+  --resource-group rg-avd-prod-01 \
+  --host-pool-name hp-pooled-prod \
   --query "[?status=='Available'].{Name:name, Image:imageVersion, Status:status}"
 ```
 
@@ -348,8 +348,8 @@ az desktopvirtualization session-host list \
 ```powershell
 # Runbook: Update-PersonalDesktops
 param (
-    [string]$ResourceGroup = "RG-Azure-VDI-01",
-    [string]$HostPoolName = "HP-Personal-EastUS2",
+    [string]$ResourceGroup = "rg-avd-prod-01",
+    [string]$HostPoolName = "hp-personal-prod",
     [string]$NewImageVersion = "1.0.2"
 )
 
@@ -384,7 +384,7 @@ foreach ($host in $sessionHosts) {
 **Process:**
 
 1. **Create staging host pool with new image version:**
-   - Deploy `HP-Pooled-EastUS2-Green` with 5 session hosts on image `1.0.2`
+   - Deploy `hp-pooled-prod-Green` with 5 session hosts on image `1.0.2`
    - Assign to a test application group with pilot users (5-10%)
 
 2. **Monitor staging for 1 week:**
@@ -399,7 +399,7 @@ foreach ($host in $sessionHosts) {
    - After all users migrated, delete blue host pool and VMs
 
 5. **Promote green to production:**
-   - Rename `HP-Pooled-EastUS2-Green` → `HP-Pooled-EastUS2`
+   - Rename `hp-pooled-prod-Green` → `hp-pooled-prod`
 
 **Benefit:** Zero downtime, instant rollback capability (just swap back to blue).
 
@@ -418,7 +418,7 @@ foreach ($host in $sessionHosts) {
 ```bash
 # If using Azure Image Builder, cancel in-progress builds
 az image builder cancel \
-  --resource-group RG-Azure-VDI-01 \
+  --resource-group rg-avd-prod-01 \
   --name AVD-Win11-25H2-Multi-Template-01
 ```
 
@@ -427,7 +427,7 @@ az image builder cancel \
 ```bash
 # Deploy new hosts from version 1.0.1
 az deployment group create \
-  --resource-group RG-Azure-VDI-01 \
+  --resource-group rg-avd-prod-01 \
   --template-file deploy-session-hosts.json \
   --parameters imageVersion=1.0.1
 ```
@@ -437,15 +437,15 @@ az deployment group create \
 ```bash
 # Set drain mode on all hosts running 1.0.2
 az desktopvirtualization sessionhost update \
-  --resource-group RG-Azure-VDI-01 \
-  --host-pool-name HP-Pooled-EastUS2 \
+  --resource-group rg-avd-prod-01 \
+  --host-pool-name hp-pooled-prod \
   --name "AVD-SH-01.domain.com" \
   --allow-new-session false
 
 # Force logoff users (if critical issue)
 az desktopvirtualization user-session delete \
-  --resource-group RG-Azure-VDI-01 \
-  --host-pool-name HP-Pooled-EastUS2 \
+  --resource-group rg-avd-prod-01 \
+  --host-pool-name hp-pooled-prod \
   --session-host-name "AVD-SH-01.domain.com" \
   --user-session-id 1 \
   --force
@@ -455,8 +455,8 @@ az desktopvirtualization user-session delete \
 
 ```bash
 az sig image-version update \
-  --resource-group RG-Azure-VDI-01 \
-  --gallery-name avd_gallery \
+  --resource-group rg-avd-prod-01 \
+  --gallery-name gal-avd-prod-01 \
   --gallery-image-definition Win11_Multi_25H2_Gen2 \
   --gallery-image-version 1.0.2 \
   --exclude-from-latest true

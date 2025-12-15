@@ -12,6 +12,8 @@ dateCreated: 2025-12-14T03:45:34.185Z
 
 Proper permission configuration is the most critical aspect of FSLogix deployments. Incorrect permissions cause profile access failures, data corruption, and security vulnerabilities. Azure Files with Entra ID authentication provides enterprise-grade access control using RBAC roles and NTFS permissions, eliminating the security risks of storage account keys.
 
+> **Prerequisites:** This assumes resource group IAM roles have been configured in [[../Deployment/02-identity-setup#configure-resource-group-iam|Step 02: Identity Setup]]. The permissions in this document cover storage account-level and share-level access control (not general AVD infrastructure management).
+
 ## Entra ID-Based Authentication for Azure Files
 
 Entra ID (formerly Azure AD) integration enables Azure Files to authenticate users using their organization identities, enforcing permissions via RBAC and NTFS ACLs.
@@ -213,14 +215,14 @@ RBAC roles control share-level permissions. Think of RBAC as "who can access the
 - Bypass NTFS permissions
 
 **Assign to:**
-- AVD-Users-Pooled (Entra ID group for pooled host pool users)
-- AVD-Users-Personal (Entra ID group for personal host pool users)
+- avd-users-pooled (Entra ID group for pooled host pool users)
+- avd-users-personal (Entra ID group for personal host pool users)
 
 **Assignment Command:**
 
 ```bash
 # Get group object ID
-GROUP_ID=$(az ad group show --group "AVD-Users-Pooled" --query id -o tsv)
+GROUP_ID=$(az ad group show --group "avd-users-pooled" --query id -o tsv)
 
 # Assign role at storage account scope
 az role assignment create \
@@ -254,14 +256,14 @@ az role assignment create \
 - Bypass NTFS permissions (like "Full Control" in Windows)
 
 **Assign to:**
-- AVD-Admins (Entra ID group for AVD administrators)
+- avd-users-admin (Entra ID group for AVD administrators)
 - Service accounts (backup software, monitoring tools)
 - Break-glass admin accounts
 
 **Assignment Command:**
 
 ```bash
-GROUP_ID=$(az ad group show --group "AVD-Admins" --query id -o tsv)
+GROUP_ID=$(az ad group show --group "avd-users-admin" --query id -o tsv)
 
 az role assignment create \
   --role "Storage File Data SMB Share Elevated Contributor" \
@@ -297,15 +299,15 @@ RBAC controls who can access the share. NTFS permissions control what users can 
 | Principal | Permissions | Apply To | Explanation |
 |-----------|------------|----------|-------------|
 | CREATOR OWNER | Full Control | Subfolders and Files Only | Users get full control over their own profile folders |
-| AVD-Users-Pooled | Modify | This Folder Only | Users can create their own profile folders |
-| AVD-Admins | Full Control | This Folder, Subfolders, and Files | Admins can manage all profiles |
+| avd-users-pooled | Modify | This Folder Only | Users can create their own profile folders |
+| avd-users-admin | Full Control | This Folder, Subfolders, and Files | Admins can manage all profiles |
 
 **User Folder (\\fslogix121025.file.core.windows.net\profiles\jdoe_jdoe@contoso.com):**
 
 | Principal | Permissions | Apply To | Explanation |
 |-----------|------------|----------|-------------|
 | jdoe@contoso.com | Full Control | This Folder, Subfolders, and Files | User owns their profile data |
-| AVD-Admins | Full Control | This Folder, Subfolders, and Files | Admins can troubleshoot/recover |
+| avd-users-admin | Full Control | This Folder, Subfolders, and Files | Admins can troubleshoot/recover |
 
 ### Setting NTFS Permissions (Step-by-Step)
 
@@ -340,8 +342,8 @@ $rule1 = New-Object System.Security.AccessControl.FileSystemAccessRule(
 )
 $acl.AddAccessRule($rule1)
 
-# Add AVD-Users-Pooled (Modify on this folder only)
-$group = New-Object System.Security.Principal.NTAccount("AVD-Users-Pooled")
+# Add avd-users-pooled (Modify on this folder only)
+$group = New-Object System.Security.Principal.NTAccount("avd-users-pooled")
 $rule2 = New-Object System.Security.AccessControl.FileSystemAccessRule(
   $group,
   "Modify",
@@ -351,8 +353,8 @@ $rule2 = New-Object System.Security.AccessControl.FileSystemAccessRule(
 )
 $acl.AddAccessRule($rule2)
 
-# Add AVD-Admins (Full Control on everything)
-$adminGroup = New-Object System.Security.Principal.NTAccount("AVD-Admins")
+# Add avd-users-admin (Full Control on everything)
+$adminGroup = New-Object System.Security.Principal.NTAccount("avd-users-admin")
 $rule3 = New-Object System.Security.AccessControl.FileSystemAccessRule(
   $adminGroup,
   "FullControl",
@@ -376,7 +378,7 @@ Expected output shows three access rules matching configuration above.
 
 **Step 4: Test User Access**
 
-Log into session host as standard user (member of AVD-Users-Pooled):
+Log into session host as standard user (member of avd-users-pooled):
 ```powershell
 # Should succeed (create user's profile folder)
 New-Item "\\fslogix121025.file.core.windows.net\profiles\testuser_testuser@contoso.com" -ItemType Directory
@@ -397,7 +399,7 @@ Get-ChildItem "\\fslogix121025.file.core.windows.net\profiles\jdoe_jdoe@contoso.
 
 **Step 3:** Click "Advanced" → "Disable inheritance" → "Convert inherited permissions"
 
-**Step 4:** Remove all entries except Administrators (or AVD-Admins)
+**Step 4:** Remove all entries except Administrators (or avd-users-admin)
 
 **Step 5:** Add entry for CREATOR OWNER:
 - Principal: CREATOR OWNER
@@ -405,25 +407,25 @@ Get-ChildItem "\\fslogix121025.file.core.windows.net\profiles\jdoe_jdoe@contoso.
 - Applies to: Subfolders and files only
 - Permissions: Full control
 
-**Step 6:** Add entry for AVD-Users-Pooled:
-- Principal: AVD-Users-Pooled
+**Step 6:** Add entry for avd-users-pooled:
+- Principal: avd-users-pooled
 - Type: Allow
 - Applies to: This folder only
 - Permissions: Modify
 
-**Step 7:** Add entry for AVD-Admins:
-- Principal: AVD-Admins
+**Step 7:** Add entry for avd-users-admin:
+- Principal: avd-users-admin
 - Type: Allow
 - Applies to: This folder, subfolders, and files
 - Permissions: Full control
 
 **Step 8:** Click OK, OK, OK (apply changes)
 
-## Our Setup: AVD-Users-Pooled and AVD-Users-Personal
+## Our Setup: avd-users-pooled and avd-users-personal
 
 In the RG-Azure-VDI-01 resource group, we use two Entra ID groups for access control:
 
-### AVD-Users-Pooled
+### avd-users-pooled
 
 **Purpose:** Users assigned to pooled (multi-session) host pools
 
@@ -433,7 +435,7 @@ In the RG-Azure-VDI-01 resource group, we use two Entra ID groups for access con
 ```bash
 az role assignment create \
   --role "Storage File Data SMB Share Contributor" \
-  --assignee-object-id $(az ad group show --group "AVD-Users-Pooled" --query id -o tsv) \
+  --assignee-object-id $(az ad group show --group "avd-users-pooled" --query id -o tsv) \
   --scope "/subscriptions/<sub-id>/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Storage/storageAccounts/fslogix121025/fileServices/default/fileshares/profiles"
 ```
 
@@ -441,7 +443,7 @@ az role assignment create \
 
 **Host Pool:** hp-pooled (Windows 11 multi-session VMs)
 
-### AVD-Users-Personal
+### avd-users-personal
 
 **Purpose:** Users assigned to personal (single-session) host pools
 
@@ -451,7 +453,7 @@ az role assignment create \
 ```bash
 az role assignment create \
   --role "Storage File Data SMB Share Contributor" \
-  --assignee-object-id $(az ad group show --group "AVD-Users-Personal" --query id -o tsv) \
+  --assignee-object-id $(az ad group show --group "avd-users-personal" --query id -o tsv) \
   --scope "/subscriptions/<sub-id>/resourceGroups/RG-Azure-VDI-01/providers/Microsoft.Storage/storageAccounts/fslogix121025/fileServices/default/fileshares/profiles"
 ```
 
@@ -478,7 +480,7 @@ Both groups use fslogix121025 storage account because:
 
 **Assign RBAC at Share Level** - Grant permissions to specific file shares (profiles share only) rather than entire storage account. Prevents accidental access to other shares (backups, scripts, etc.) in same account.
 
-**Use Groups, Not Individual Users** - Assign RBAC to Entra ID groups (AVD-Users-Pooled), not individual user accounts. Group-based management scales better and simplifies access reviews during employee changes.
+**Use Groups, Not Individual Users** - Assign RBAC to Entra ID groups (avd-users-pooled), not individual user accounts. Group-based management scales better and simplifies access reviews during employee changes.
 
 **Minimal Elevated Contributor Grants** - Only assign Elevated Contributor role to administrators who actively manage profiles. Most users need only Contributor role. Over-granting Elevated breaks NTFS security model.
 
@@ -495,7 +497,7 @@ Both groups use fslogix121025 storage account because:
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | Access Denied when mounting share | User lacks RBAC role | Assign Storage File Data SMB Share Contributor to user's group |
-| FSLogix cannot create profile folder | NTFS root folder missing Modify for users | Add Modify permission for AVD-Users group on root folder |
+| FSLogix cannot create profile folder | NTFS root folder missing Modify for users | Add Modify permission for avd-users group on root folder |
 | User can access other users' profiles | NTFS subfolder permissions too permissive | Verify CREATOR OWNER configured correctly, check subfolder ACLs |
 | Kerberos authentication failed | Session host not domain-joined | Join session host to Entra ID or hybrid AD domain |
 | Share accessible with keys but not Entra ID | Entra ID auth not enabled on storage account | Run: az storage account update --enable-files-aadds true |

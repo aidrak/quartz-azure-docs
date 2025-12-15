@@ -84,9 +84,9 @@ The following compliance requirements are recommended for AVD session hosts. The
 
 **Deployment Workflow:**
 1. Create configuration profile to deploy BitLocker settings (enable BitLocker, set encryption method to XTS-AES 256)
-2. Assign configuration profile to AVD-Devices-All
+2. Assign configuration profile to avd-devices-all
 3. Create compliance policy requiring BitLocker enabled
-4. Assign compliance policy to AVD-Devices-All
+4. Assign compliance policy to avd-devices-all
 5. Wait 24-48 hours for BitLocker encryption to complete and compliance status to update
 
 ### Firewall Enabled
@@ -135,7 +135,7 @@ The following compliance requirements are recommended for AVD session hosts. The
 
 **Recommendation:** Set minimum OS version based on your organization's update cadence:
 - **Conservative**: Windows 10 21H2 or Windows 11 22H2 (long-term support)
-- **Current**: Windows 10 22H2 or Windows 11 23H2 (latest feature updates)
+- **Current**: Windows 10 22H2 or Windows 11 25H2 (latest feature updates)
 
 **Impact:** Devices running older OS versions (e.g., Windows 10 20H2) will be marked as non-compliant. Plan golden image updates before enabling this requirement.
 
@@ -293,7 +293,7 @@ Conditional Access policies enforce access controls based on conditions (user, l
 
 **Configuration:**
 1. Create Intune compliance policy (e.g., require BitLocker, firewall, antivirus)
-2. Assign compliance policy to AVD-Devices-All group
+2. Assign compliance policy to avd-devices-all group
 3. Create Conditional Access policy:
    - Users: All users (or specific AVD user group)
    - Cloud apps: Windows Virtual Desktop (AVD)
@@ -346,7 +346,7 @@ This ensures both device types are covered.
 
 ### Compliance Policy: AVD Session Hosts - Security Baseline
 
-**Assigned To:** AVD-Devices-All (all AVD session hosts in RG-Azure-VDI-01)
+**Assigned To:** avd-devices-all (all AVD session hosts in RG-Azure-VDI-01)
 
 **Requirements:**
 - **BitLocker**: Required (OS drive)
@@ -376,7 +376,7 @@ This ensures both device types are covered.
    - Add actions for non-compliance (email immediately, mark non-compliant after 1 day)
 
 2. **Assign to Device Group**
-   - Assign to AVD-Devices-All group
+   - Assign to avd-devices-all group
    - Exclude any test/pilot devices if needed
 
 3. **Monitor Compliance Status**
@@ -406,7 +406,7 @@ This ensures both device types are covered.
 - Entra Admin Center → Monitoring → Sign-in Logs → [User] → Conditional Access tab
 
 **Expected Result:**
-- All session hosts in AVD-Devices-All show "Compliant" status
+- All session hosts in avd-devices-all show "Compliant" status
 - Sign-in logs show "Success" with "Require compliant device" policy applied
 
 ## Best Practices
