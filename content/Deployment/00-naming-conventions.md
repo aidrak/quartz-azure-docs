@@ -76,6 +76,7 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 | Admin Group | `avd-users-admin` | `avd-users-admin` | RBAC on RG |
 | Device Group (pooled) | `avd-devices-{type}` | `avd-devices-pooled` | Dynamic: `(device.displayName -startsWith "vm-pool-")` |
 | Device Group (personal) | `avd-devices-{type}` | `avd-devices-personal` | Dynamic: `(device.displayName -startsWith "vm-personal-")` |
+| Device Group (all) | `avd-devices-all` | `avd-devices-all` | Dynamic: `(device.displayName -startsWith "vm-pool-") -or (device.displayName -startsWith "vm-personal-")` |
 
 ### Monitoring & Security
 
@@ -109,7 +110,7 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 | 13 | Azure Compute Gallery | 1 | `gal-avd-{env}-{num}` | `gal-avd-prod-01` |
 | 14 | Image Definitions | 2 | `win{ver}-{type}` | `win11-multisession-25h2` |
 | 15 | User Groups (Entra) | 3 | `avd-users-{type}` | `avd-users-pooled`, `avd-users-admin` |
-| 16 | Device Groups (Entra) | 2 | `avd-devices-{type}` | `avd-devices-pooled` |
+| 16 | Device Groups (Entra) | 3 | `avd-devices-{type}` | `avd-devices-pooled`, `avd-devices-all` |
 | 17 | Log Analytics | 1 | `law-avd-{env}-{num}` | `law-avd-prod-01` |
 | 18 | Key Vault | 1 | `kv-avd-{env}` | `kv-avd-prod` |
 
