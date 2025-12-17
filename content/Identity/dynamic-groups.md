@@ -92,9 +92,9 @@ Users with email addresses ending in @contoso.com (regex).
 **Device Rules:**
 
 ```
-device.displayName -startsWith "avd-pool"
+device.displayName -startsWith "vm-pooled-"
 ```
-All devices whose name starts with "avd-pool".
+All devices whose name starts with "vm-pooled-".
 
 ```
 device.deviceOSType -eq "Windows"
@@ -102,9 +102,9 @@ device.deviceOSType -eq "Windows"
 All Windows devices.
 
 ```
-(device.displayName -startsWith "avd-") -and (device.deviceOSType -eq "Windows")
+(device.displayName -startsWith "vm-pooled-") -and (device.deviceOSType -eq "Windows")
 ```
-Windows devices whose names start with "avd-".
+Windows devices whose names start with "vm-pooled-".
 
 ### Common User Properties
 
@@ -123,7 +123,7 @@ Windows devices whose names start with "avd-".
 
 | Property | Example Value | Use Case |
 |----------|---------------|----------|
-| `device.displayName` | `avd-pool-prod1-0` | Naming convention grouping |
+| `device.displayName` | `vm-pooled-001` | Naming convention grouping |
 | `device.deviceOSType` | `Windows`, `Linux` | OS-specific policies |
 | `device.deviceOSVersion` | `10.0.19045.0` | OS version targeting |
 | `device.deviceTrustType` | `AzureAd`, `ServerAd` | Join type (Entra vs Hybrid) |
@@ -145,7 +145,7 @@ These groups exist in our RG-Azure-VDI-01 deployment:
 
 **Rule:**
 ```
-(device.displayName -startsWith "avd-pool") -or (device.displayName -startsWith "avd-pers")
+(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")
 ```
 
 **Use Case:**
@@ -159,7 +159,7 @@ These groups exist in our RG-Azure-VDI-01 deployment:
 
 **Rule:**
 ```
-device.displayName -startsWith "avd-pool-prod"
+device.displayName -startsWith "vm-pooled-"
 ```
 
 **Use Case:**
@@ -173,7 +173,7 @@ device.displayName -startsWith "avd-pool-prod"
 
 **Rule:**
 ```
-device.displayName -startsWith "avd-pers-prod"
+device.displayName -startsWith "vm-personal-"
 ```
 
 **Use Case:**
@@ -199,7 +199,7 @@ device.extensionAttribute1 -eq "SSO-Enabled"
 During VM deployment, a script sets the custom attribute via Microsoft Graph:
 ```powershell
 Connect-MgGraph -Scopes "Device.ReadWrite.All"
-$device = Get-MgDevice -Filter "displayName eq 'avd-pool-prod1-0'"
+$device = Get-MgDevice -Filter "displayName eq 'vm-pooled-001'"
 Update-MgDevice -DeviceId $device.Id -AdditionalProperties @{extensionAttribute1="SSO-Enabled"}
 ```
 
@@ -257,20 +257,20 @@ user.extensionAttribute2 -eq "Personal"
 ### Naming Convention Grouping
 
 Our AVD session hosts follow this naming convention:
-- **Pooled:** `avd-pool-{env}-{pool-id}-{index}` → `avd-pool-prod1-0`, `avd-pool-prod1-1`
-- **Personal:** `avd-pers-{env}-{pool-id}-{index}` → `avd-pers-prod1-0`, `avd-pers-prod1-1`
+- **Pooled:** `vm-pooled-{nnn}` → `vm-pooled-001`, `vm-pooled-002`, etc.
+- **Personal:** `vm-personal-{nnn}` → `vm-personal-011`, `vm-personal-012`, etc.
 
 Dynamic groups use the `-startsWith` operator to categorize devices:
 
 ```
-(device.displayName -startsWith "avd-pool-prod1")
+(device.displayName -startsWith "vm-pooled-")
 ```
-Captures only session hosts in the `hp-pooled-prod1` host pool.
+Captures all pooled session hosts.
 
 ```
-(device.displayName -startsWith "avd-pool-dev")
+(device.displayName -startsWith "vm-personal-")
 ```
-Captures only development environment pooled hosts.
+Captures all personal session hosts.
 
 This pattern scales infinitely: when a new session host joins Entra ID with the correct naming convention, it automatically appears in the appropriate groups within 24 hours (usually faster).
 
@@ -323,8 +323,8 @@ $group.MembershipRuleProcessingState
 
 ## Best Practices
 
-- **Use extension attributes for custom categorization** - `extensionAttribute1-15` are designed for this purpose. Don't overload `department` or `jobTitle` with values like "AVD-Pooled" when extension attributes exist.
-- **Prefer simple rules when possible** - `device.displayName -startsWith "avd-pool"` is faster and more maintainable than complex regex patterns.
+- **Use extension attributes for custom categorization** - `extensionAttribute1-15` are designed for this purpose. Don't overload `department` or `jobTitle` with values like "avd-pooled" when extension attributes exist.
+- **Prefer simple rules when possible** - `device.displayName -startsWith "vm-pooled-"` is faster and more maintainable than complex regex patterns.
 - **Document the business logic** - In the group description field, explain WHY the rule exists ("Auto-assigns pooled host pools for Intune compliance policies").
 - **Avoid circular dependencies** - Don't create rules like "user is member of Group A" when Group A is also dynamic. Use attributes directly.
 - **Test rules with "Validate rules" feature** - Entra portal has a built-in validator showing which objects would match your rule before you save it.

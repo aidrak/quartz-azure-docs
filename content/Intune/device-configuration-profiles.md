@@ -131,7 +131,7 @@ FSLogix is the Microsoft-recommended solution for user profile management in AVD
 1. Create new Settings Catalog profile: "AVD - FSLogix Profile Containers"
 2. Search for "FSLogix" in Settings Catalog
 3. Add all settings above
-4. Assign to **AVD-Devices-Pooled** group
+4. Assign to **avd-devices-pooled** group
 
 > **Note:** FSLogix settings apply only to pooled AVD environments where users do not have persistent desktops. Personal AVD hosts can use FSLogix for profile portability, but it's less critical since users have dedicated session hosts.
 
@@ -155,7 +155,7 @@ RDP properties control the user experience for AVD sessions. These settings over
 1. Create new Settings Catalog profile: "AVD - RDP Properties"
 2. Search for "Remote Desktop Services" in Settings Catalog
 3. Add settings above
-4. Assign to **AVD-Devices-All** group
+4. Assign to **avd-devices-all** group
 
 ### Windows Update Settings
 
@@ -192,7 +192,7 @@ Known Folder Move (KFM) redirects user's Desktop, Documents, and Pictures folder
 1. Create new Settings Catalog profile: "AVD - OneDrive Known Folder Move"
 2. Search for "OneDrive" in Settings Catalog
 3. Add settings above, set Tenant ID to your Entra tenant ID
-4. Assign to **AVD-Devices-All** group
+4. Assign to **avd-devices-all** group
 
 > **Best Practice:** Known Folder Move works seamlessly with FSLogix. OneDrive syncs files to the cloud, while FSLogix stores user profile data (registry, app settings). This combination provides fast logon (FSLogix) and data protection (OneDrive).
 
@@ -210,7 +210,7 @@ Timezone redirection ensures that the AVD session uses the client's local timezo
 1. Create new Settings Catalog profile: "AVD - Timezone Redirection"
 2. Search for "time zone redirection" in Settings Catalog
 3. Enable setting
-4. Assign to **AVD-Devices-All** group
+4. Assign to **avd-devices-all** group
 
 **Impact:** Users see correct local time in their AVD session, which is critical for applications like Outlook calendar, time-stamped documents, and scheduling tools.
 
@@ -224,34 +224,34 @@ Use Entra ID dynamic groups to automatically organize session hosts based on nam
 
 **Our Environment Groups:**
 
-**AVD-Devices-All** (All AVD session hosts)
+**avd-devices-all** (All AVD session hosts)
 ```
-(device.displayName -startsWith "hp-")
-```
-
-**AVD-Devices-Pooled** (Pooled session hosts only)
-```
-(device.displayName -contains "pooled")
+(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")
 ```
 
-**AVD-Devices-Personal** (Personal session hosts only)
+**avd-devices-pooled** (Pooled session hosts only)
 ```
-(device.displayName -contains "personal")
+(device.displayName -startsWith "vm-pooled-")
+```
+
+**avd-devices-personal** (Personal session hosts only)
+```
+(device.displayName -startsWith "vm-personal-")
 ```
 
 ### Profile Assignment Strategy
 
-**Assign to AVD-Devices-All:**
+**Assign to avd-devices-all:**
 - RDP properties (applies to all AVD types)
 - Timezone redirection (applies to all AVD types)
 - OneDrive Known Folder Move (applies to all AVD types)
 - Security baselines (applies to all AVD types)
 
-**Assign to AVD-Devices-Pooled:**
+**Assign to avd-devices-pooled:**
 - FSLogix profile container settings (pooled only, not needed for personal with local profiles)
 - Windows Update settings (if updating individual hosts; otherwise update golden image)
 
-**Assign to AVD-Devices-Personal:**
+**Assign to avd-devices-personal:**
 - Windows Update rings (personal desktops can be updated via Intune)
 - User-specific application configurations
 
@@ -398,9 +398,9 @@ Collect detailed logs for Microsoft support:
 **Why:** Easier to troubleshoot, reduces conflicts, and allows granular assignment.
 
 **Example Structure:**
-- **AVD - Global Settings** (assigned to AVD-Devices-All): RDP properties, timezone redirection, security baselines
-- **AVD - Pooled FSLogix** (assigned to AVD-Devices-Pooled): FSLogix profile container settings
-- **AVD - Personal Updates** (assigned to AVD-Devices-Personal): Windows Update rings
+- **AVD - Global Settings** (assigned to avd-devices-all): RDP properties, timezone redirection, security baselines
+- **AVD - Pooled FSLogix** (assigned to avd-devices-pooled): FSLogix profile container settings
+- **AVD - Personal Updates** (assigned to avd-devices-personal): Windows Update rings
 
 ### Use Descriptive Naming Conventions
 
@@ -424,10 +424,10 @@ Collect detailed logs for Microsoft support:
 **Why:** Prevents production outages from misconfigured settings.
 
 **Workflow:**
-1. Create "AVD-Devices-Pilot" dynamic group (e.g., session hosts with "test" in display name)
+1. Create "avd-devices-pilot" dynamic group (e.g., session hosts with "test" in display name)
 2. Assign new configuration profile to pilot group
 3. Monitor for 48 hours, check for errors
-4. If successful, reassign to production group (AVD-Devices-All or AVD-Devices-Pooled)
+4. If successful, reassign to production group (avd-devices-all or avd-devices-pooled)
 
 ### Monitor Profile Deployment Weekly
 
@@ -446,7 +446,7 @@ Device configuration profiles are essential for managing AVD session hosts at sc
 - Use **Settings Catalog** for all new profiles (modern, searchable, cloud-native)
 - Configure **FSLogix settings** for pooled AVD environments (profile portability)
 - Configure **RDP properties** for user experience (timezone redirection, clipboard, audio)
-- Assign profiles to **device groups** (AVD-Devices-Pooled, AVD-Devices-Personal) for consistent application
+- Assign profiles to **device groups** (avd-devices-pooled, avd-devices-personal) for consistent application
 - Monitor **deployment status** weekly to catch errors early
 
 ## Next Steps

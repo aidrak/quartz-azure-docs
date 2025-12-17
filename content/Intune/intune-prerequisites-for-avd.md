@@ -246,9 +246,9 @@ Intune allows you to control which devices can enroll and which device types are
 **Environment:** RG-Azure-VDI-01 (Azure Resource Group)
 
 **Device Groups:**
-- **AVD-Devices-All**: Dynamic group containing all AVD session hosts
-- **AVD-Devices-Pooled**: Dynamic group for pooled session hosts (hp-pooled-prod1)
-- **AVD-Devices-Personal**: Dynamic group for personal session hosts (hp-personal-prod1)
+- **avd-devices-all**: Dynamic group containing all AVD session hosts
+- **avd-devices-pooled**: Dynamic group for pooled session hosts (hp-pooled-prod)
+- **avd-devices-personal**: Dynamic group for personal session hosts (hp-personal-prod)
 
 **Enrollment Method:**
 - **Entra Join** with automatic MDM enrollment
@@ -269,22 +269,22 @@ Intune allows you to control which devices can enroll and which device types are
 
 These queries automatically populate device groups based on session host properties:
 
-**AVD-Devices-All:**
+**avd-devices-all:**
 ```
-(device.displayName -startsWith "avd-") -or (device.displayName -startsWith "hp-")
-```
-
-**AVD-Devices-Pooled:**
-```
-(device.displayName -contains "pooled")
+(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")
 ```
 
-**AVD-Devices-Personal:**
+**avd-devices-pooled:**
 ```
-(device.displayName -contains "personal")
+(device.displayName -startsWith "vm-pooled-")
 ```
 
-> **Note:** Adjust these queries based on your naming conventions. Our session hosts use naming patterns like `hp-pooled-prod1-0`, `hp-pooled-prod1-1`, etc.
+**avd-devices-personal:**
+```
+(device.displayName -startsWith "vm-personal-")
+```
+
+> **Note:** These queries match our naming conventions where session hosts use patterns like `vm-pooled-001`, `vm-pooled-002`, `vm-personal-011`, etc.
 
 ## Key Concepts
 
@@ -335,7 +335,7 @@ Both happen automatically for Entra-joined AVD session hosts when auto-enrollmen
 
 **Why:** Automatically organize session hosts based on properties (e.g., pooled vs personal, production vs test). Policies and apps can then target these groups without manual device assignment.
 
-**Example:** Create "AVD-Devices-Pooled" dynamic group with query `(device.displayName -contains "pooled")`, then assign configuration profiles to this group.
+**Example:** Create "avd-devices-pooled" dynamic group with query `(device.displayName -startsWith "vm-pooled-")`, then assign configuration profiles to this group.
 
 ### Set Enrollment Restrictions
 
@@ -355,7 +355,7 @@ Both happen automatically for Entra-joined AVD session hosts when auto-enrollmen
 | **Enrollment fails with "0x80180002" error** | User lacks Intune license or MAM-only license assigned | Assign full Intune license (Microsoft 365 E3/E5 or Intune Plan 1), not just MAM license |
 | **Hybrid-joined session host does not enroll** | GPO not configured or not applied | 1. Verify GPO: Computer Configuration → Windows Components → MDM → "Enable automatic MDM enrollment" is enabled<br>2. Force GPO update: `gpupdate /force`<br>3. Check event log: Applications and Services → Microsoft → Windows → DeviceManagement-Enterprise-Diagnostics-Provider |
 | **Policies not applying after enrollment** | Device not in targeted group, or policy conflict | 1. Verify device membership in targeted Entra ID group (Intune Admin Center → Devices → All Devices → [Device] → Groups)<br>2. Check policy status: Devices → All Devices → [Device] → Device Configuration → Monitor<br>3. Force policy sync: Devices → All Devices → [Device] → Sync |
-| **Enrollment succeeds but compliance shows "Not Evaluated"** | Compliance policy not assigned or not targeting device | 1. Create compliance policy (Devices → Compliance Policies → Create Policy)<br>2. Assign to device group (AVD-Devices-All)<br>3. Wait up to 8 hours or force sync |
+| **Enrollment succeeds but compliance shows "Not Evaluated"** | Compliance policy not assigned or not targeting device | 1. Create compliance policy (Devices → Compliance Policies → Create Policy)<br>2. Assign to device group (avd-devices-all)<br>3. Wait up to 8 hours or force sync |
 | **"Too many devices enrolled" error** | User exceeded device limit (default 5) | Increase device limit: Devices → Enrollment → Enrollment Restrictions → Device Limit Restrictions → Set limit to 10-15 |
 
 > **Note:** Intune policy application can take up to 8 hours for initial check-in. To force immediate sync, go to Intune Admin Center → Devices → All Devices → [Device] → Sync, or run `C:\Program Files\Microsoft Intune Management Extension\Microsoft.Management.Services.IntuneWindowsAgent.exe` on the session host.
@@ -367,7 +367,7 @@ Before deploying AVD session hosts, verify the following prerequisites:
 - [ ] **Licensing**: Users have Microsoft 365 E3/E5 or Intune Plan 1 licenses assigned
 - [ ] **Auto-Enrollment**: MDM auto-enrollment configured in Entra Admin Center (MDM User Scope = All)
 - [ ] **Enrollment Restrictions**: Device type, ownership, and OS version restrictions configured
-- [ ] **Device Groups**: Dynamic groups created for AVD-Devices-All, AVD-Devices-Pooled, AVD-Devices-Personal
+- [ ] **Device Groups**: Dynamic groups created for avd-devices-all, avd-devices-pooled, avd-devices-personal
 - [ ] **Test Enrollment**: Deploy one test session host and verify it appears in Intune within 8 hours
 - [ ] **Policy Assignment**: At least one configuration profile or compliance policy assigned to AVD device groups
 

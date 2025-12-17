@@ -185,7 +185,7 @@ The RG-Azure-VDI-01 resource group uses **Entra Join** for session hosts in host
 
 These groups are dynamic, populated by rules like:
 ```
-(device.displayName -startsWith "avd-pool") -or (device.displayName -startsWith "avd-pers")
+(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")
 ```
 
 ## Migration from Hybrid to Entra Join

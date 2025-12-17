@@ -122,7 +122,7 @@ Collection of PowerShell scripts for Intune Proactive Remediations. These script
    - **Run script in 64-bit PowerShell context**: Yes (for compatibility)
 
 6. **Assignments**:
-   - Assign to `AVD-Devices-All` or specific device group
+   - Assign to `avd-devices-all` or specific device group
 
 7. **Review + Create**
 
@@ -140,7 +140,7 @@ Collection of PowerShell scripts for Intune Proactive Remediations. These script
 ## Best Practices
 
 1. **Use User-Context Execution** - For settings that apply per-user (notifications, taskbar, shortcuts)
-2. **Test with Pilot Group** - Deploy to small test group first (AVD-Devices-Pilot)
+2. **Test with Pilot Group** - Deploy to small test group first (avd-devices-pilot)
 3. **Check Detection Scripts** - Review what the detection script checks before deploying
 4. **Monitor Compliance Weekly** - Review proactive remediation status in Intune
 5. **Version Your Scripts** - Add comments with version numbers and modification dates

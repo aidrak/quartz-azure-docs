@@ -126,9 +126,9 @@ Typical identity setup for a production AVD environment with 200 users:
 - `avd-users-admin` - Manual assignment for IT administrators
 
 **Device Groups (Dynamic):**
-- `avd-devices-all` - All session hosts (naming: avd-pool-*, avd-pers-*)
-- `avd-devices-pooled` - Multi-session hosts only (naming: avd-pool-*)
-- `avd-devices-personal` - Single-session hosts only (naming: avd-pers-*)
+- `avd-devices-all` - All session hosts (naming: vm-pooled-*, vm-personal-*)
+- `avd-devices-pooled` - Multi-session hosts only (naming: vm-pooled-*)
+- `avd-devices-personal` - Single-session hosts only (naming: vm-personal-*)
 
 **Conditional Access Policies:**
 - Policy 1: Require MFA for all AVD users

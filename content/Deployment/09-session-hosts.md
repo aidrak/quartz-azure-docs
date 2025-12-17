@@ -28,7 +28,7 @@ Deploy VMs to the pooled host pool using the Golden Image from Azure Compute Gal
 | Setting | Value |
 | :--- | :--- |
 | **Resource group** | `rg-avd-prod-01` |
-| **Name prefix** | `vm-pool-` |
+| **Name prefix** | `vm-pooled-` |
 | **Location** | East US |
 | **Security type** | Trusted launch virtual machines |
 | **Number of VMs** | 10 |
@@ -76,7 +76,7 @@ In the form above, scroll down and find **Custom configuration** section:
 
 1. **Verify Status:** Azure Portal -> `hp-pooled-prod` -> **Session hosts**. Status should show **Available**.
 2. **Verify Custom Script:** If script configured, check logs on one VM:
-   - RDP to `vm-pool-001`
+   - RDP to `vm-pooled-001`
    - View: `C:\AVDDeployment.log` (or your script's log file)
    - Verify all commands executed successfully
    - Check: `C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\` for extension logs

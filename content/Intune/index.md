@@ -142,19 +142,19 @@ These Intune reference pages support the following Quick-Deploy steps:
 
 Create these Entra ID dynamic groups for Intune targeting:
 
-**AVD-Devices-All:**
+**avd-devices-all:**
 ```
-(device.displayName -startsWith "hp-")
-```
-
-**AVD-Devices-Pooled:**
-```
-(device.displayName -contains "pooled")
+(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")
 ```
 
-**AVD-Devices-Personal:**
+**avd-devices-pooled:**
 ```
-(device.displayName -contains "personal")
+(device.displayName -startsWith "vm-pooled-")
+```
+
+**avd-devices-personal:**
+```
+(device.displayName -startsWith "vm-personal-")
 ```
 
 ## Best Practices
@@ -171,7 +171,7 @@ Create these Entra ID dynamic groups for Intune targeting:
 ### Initial Setup (Cloud-Native AVD)
 
 1. Configure Intune auto-enrollment (Entra Admin Center → Mobility → MDM User Scope = All)
-2. Create dynamic device groups (AVD-Devices-All, AVD-Devices-Pooled, AVD-Devices-Personal)
+2. Create dynamic device groups (avd-devices-all, avd-devices-pooled, avd-devices-personal)
 3. Deploy session hosts with Entra Join enabled (auto-enroll into Intune)
 4. Create Settings Catalog profiles for FSLogix, RDP properties
 5. Create compliance policy requiring BitLocker, firewall, antivirus
@@ -183,15 +183,15 @@ Create these Entra ID dynamic groups for Intune targeting:
 2. Package with IntuneWinAppUtil.exe
 3. Upload to Intune as Win32 app
 4. Configure detection rules (file, registry, or PowerShell script)
-5. Assign to AVD-Devices-Personal or AVD-Personal-Users
+5. Assign to avd-devices-personal or avd-users-personal
 6. Monitor deployment status (Apps → [App] → Device install status)
 
 ### Windows Update Management (Personal AVD)
 
 1. Create pilot update ring (0-day quality deferral, 60-day feature deferral)
 2. Create production update ring (14-day quality deferral, 180-day feature deferral)
-3. Assign pilot ring to AVD-Devices-Pilot (2-5 test hosts)
-4. Assign production ring to AVD-Devices-Personal
+3. Assign pilot ring to avd-devices-pilot (2-5 test hosts)
+4. Assign production ring to avd-devices-personal
 5. Monitor update compliance weekly (Reports → Windows Updates)
 
 ## Troubleshooting Quick Reference
