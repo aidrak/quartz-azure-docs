@@ -1,3 +1,12 @@
+---
+title: Step 11 - Go-Live & Monitoring
+description: Configure monitoring, alerts, and scaling plans before production go-live
+published: true
+date: 2025-12-14
+tags:
+editor: markdown
+---
+
 # Step 11: Go-Live & Monitoring Setup
 
 Configure monitoring before production go-live. This step creates a Log Analytics workspace, enables diagnostic settings on AVD resources, configures critical alerts, and deploys scaling plans.

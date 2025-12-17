@@ -29,9 +29,9 @@ Configure Entra ID users, groups, Conditional Access policies, and SSO for Azure
 | `avd-users-pooled`     | Security | Dynamic User   | `(user.department -eq "General") -or (user.department -eq "Finance")`     |
 | `avd-users-personal`   | Security | Dynamic User   | `(user.department -eq "Creative") -or (user.department -eq "Executives")` |
 | `avd-users-admin`      | Security | Assigned       | Manual - add your admin accounts                                          |
-| `avd-devices-pooled`   | Security | Dynamic Device | `device.displayName -startsWith "avd-pool"`                               |
-| `avd-devices-personal` | Security | Dynamic Device | `device.displayName -startsWith "avd-pers"`                               |
-| `avd-devices-all`      | Security | Dynamic Device | `(device.displayName -startsWith "avd-")`                                 |
+| `avd-devices-pooled`   | Security | Dynamic Device | `device.displayName -startsWith "vm-pooled-"`                             |
+| `avd-devices-personal` | Security | Dynamic Device | `device.displayName -startsWith "vm-personal-"`                           |
+| `avd-devices-all`      | Security | Dynamic Device | `(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")` |
 
 **Steps for each group:**
 1. Click **+ New group**
@@ -68,6 +68,28 @@ See [[../Identity/conditional-access]] for advanced scenarios and policy best pr
 
 ---
 
+## Create Managed Identity
+
+Create a User Assigned Managed Identity for automation tasks (scaling, image building, etc.).
+
+**Portal:** Azure Portal → Managed Identities → Create
+
+| Setting | Value |
+|---------|-------|
+| Subscription | Your subscription |
+| Resource Group | `rg-avd-prod-01` |
+| Region | Same as Resource Group (e.g., East US) |
+| Name | `id-avd-automation-prod` |
+
+**Steps:**
+1. Search for **Managed Identities** in the portal
+2. Click **Create**
+3. Select Resource Group `rg-avd-prod-01`
+4. Enter name `id-avd-automation-prod` (adjust for your environment)
+5. Click **Review + create** → **Create**
+
+---
+
 ## Configure Resource Group IAM
 
 Azure role-based access control (RBAC) determines who can manage AVD infrastructure and perform administrative tasks. Set up roles at the resource group level (RG-Azure-VDI-01) to control permissions for your AVD deployment.
@@ -80,6 +102,7 @@ Azure role-based access control (RBAC) determines who can manage AVD infrastruct
 |------|-----------|-------|---------|
 | **Owner** | Break-glass admin account | Resource Group | Emergency-only root access; use just-in-time (JIT) access |
 | **Contributor** | avd-users-admin group | Resource Group | Manage AVD resources: host pools, session hosts, app groups |
+| **Contributor** | `id-avd-automation-prod` | Resource Group | Automation identity for scaling and image management |
 | **Virtual Machine Administrator Login** | avd-users-admin group | Resource Group | RDP/SSH login to session hosts for troubleshooting |
 | **Virtual Machine User Login** | avd-users-pooled, avd-users-personal | Resource Group | Standard user RDP access to session hosts (optional if using application assignment) |
 
@@ -113,12 +136,13 @@ Single Sign-On configuration has multiple components that span this step and sub
 
 ## Verification Checklist
 
-- [ ] All 6 groups created: 3 user groups (Pooled, Personal, Admins) + 3 device groups (Pooled, Personal, All)
+- [ ] All 6 groups created: 3 user groups (`avd-users-pooled`, `avd-users-personal`, `avd-users-admin`) + 3 device groups (`avd-devices-pooled`, `avd-devices-personal`, `avd-devices-all`)
 - [ ] Dynamic groups show **Rule processing status: Succeeded** (wait 5-15 minutes if processing)
 - [ ] Conditional Access policies created in Report-only mode (monitor 3-7 days before enabling)
 - [ ] Break-glass admin excluded from all policies
 - [ ] Policies tested with What If tool: Entra Admin Center → Protection → Conditional Access → What If (verify MFA policy applies to test user)
-- [ ] Resource Group IAM roles assigned: Owner (break-glass), Contributor (avd-users-admin), VM Admin/User logins configured
+- [ ] **Managed Identity created**: `id-avd-automation-prod` exists in the resource group
+- [ ] Resource Group IAM roles assigned: Owner (break-glass), Contributor (avd-users-admin + managed identity), VM Admin/User logins configured
 - [ ] Role assignments verified in RG-Azure-VDI-01 → Access control (IAM) → View all role assignments
 
 ---

@@ -18,7 +18,7 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 |----------|------|-----|
 | Resource Group | `rg-avd-prod-01` | 1 |
 | Pooled Host Pool | `hp-pooled-prod` | 1 |
-| Pooled VMs | `vm-pool-001` through `-010` | 10 |
+| Pooled VMs | `vm-pooled-001` through `-010` | 10 |
 | Personal Host Pool | `hp-personal-prod` | 1 |
 | Personal VMs | `vm-personal-011` through `-050` | 40 |
 | Storage Account | `stavdprod01` | 1 |
@@ -47,7 +47,8 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 |----------|---------|---------|-------|
 | Host Pool (pooled) | `hp-{type}-{env}` | `hp-pooled-prod` | Breadth-first load balancing |
 | Host Pool (personal) | `hp-{type}-{env}` | `hp-personal-prod` | 1:1 VMs to users |
-| Session Hosts | `vm-{type}-{nnn}` | `vm-pool-001` to `-010` | 11-char limit; 001-010 for pooled, 011-050 for personal |
+| Session Hosts (pooled) | `vm-pooled-{nnn}` | `vm-pooled-001` to `-010` | 13-char; 001-010 reserved for pooled |
+| Session Hosts (personal) | `vm-personal-{nnn}` | `vm-personal-011` to `-050` | 15-char limit; 011-050 reserved for personal |
 | Application Groups | `ag-{type}-{env}` | `ag-pooled-prod` | One per host pool type |
 | Workspace | `ws-{env}` | `ws-prod` | Aggregates all AppGroups |
 
@@ -74,9 +75,10 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 | User Group (pooled) | `avd-users-{type}` | `avd-users-pooled` | 120 users |
 | User Group (personal) | `avd-users-{type}` | `avd-users-personal` | 40 users |
 | Admin Group | `avd-users-admin` | `avd-users-admin` | RBAC on RG |
-| Device Group (pooled) | `avd-devices-{type}` | `avd-devices-pooled` | Dynamic: `(device.displayName -startsWith "vm-pool-")` |
+| Managed Identity | `id-avd-automation-{env}` | `id-avd-automation-prod` | Automation/Image Builder identity |
+| Device Group (pooled) | `avd-devices-{type}` | `avd-devices-pooled` | Dynamic: `(device.displayName -startsWith "vm-pooled-")` |
 | Device Group (personal) | `avd-devices-{type}` | `avd-devices-personal` | Dynamic: `(device.displayName -startsWith "vm-personal-")` |
-| Device Group (all) | `avd-devices-all` | `avd-devices-all` | Dynamic: `(device.displayName -startsWith "vm-pool-") -or (device.displayName -startsWith "vm-personal-")` |
+| Device Group (all) | `avd-devices-all` | `avd-devices-all` | Dynamic: `(device.displayName -startsWith "vm-pooled-") -or (device.displayName -startsWith "vm-personal-")` |
 
 ### Monitoring & Security
 
@@ -100,7 +102,7 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 | 3 | VNET + Subnets | 1+2 | `vnet-avd-{env}-{num}` | `vnet-avd-prod-01` |
 | 4 | NSGs | 2 | `nsg-avd-{env}-{purpose}` | `nsg-avd-prod-sessionhosts` |
 | 5 | Host Pool (pooled) | 1 | `hp-pooled-{env}` | `hp-pooled-prod` |
-| 6 | Session Hosts (pooled) | 10 | `vm-pool-{nnn}` | `vm-pool-001` to `-010` |
+| 6 | Session Hosts (pooled) | 10 | `vm-pooled-{nnn}` | `vm-pooled-001` to `-010` |
 | 7 | Host Pool (personal) | 1 | `hp-personal-{env}` | `hp-personal-prod` |
 | 8 | Session Hosts (personal) | 40 | `vm-personal-{nnn}` | `vm-personal-011` to `-050` |
 | 9 | App Groups | 2 | `ag-{type}-{env}` | `ag-pooled-prod`, `ag-personal-prod` |
@@ -115,6 +117,24 @@ Define consistent naming patterns for all Azure resources in your AVD deployment
 | 18 | Key Vault | 1 | `kv-avd-{env}` | `kv-avd-prod` |
 
 **Total: ~31 resources** (pooled-only FSLogix)
+
+---
+
+## Azure Portal Setup
+
+Before starting deployment, configure your Azure Portal for efficient resource management:
+
+**Configure Portal Settings:**
+
+1. **Portal:** Azure Portal (portal.azure.com)
+2. Click the Settings icon (gear ⚙️) in the top-right corner
+3. Select **Appearance + startup views** from the left menu
+4. Configure the following settings:
+   - **Menu behavior:** Docked
+   - **Service menu behavior:** Expanded
+   - **Theme:** Dark
+   - **Startup page:** Home
+5. Click **Apply** at the bottom
 
 ---
 
@@ -146,8 +166,8 @@ Confirm before proceeding to Step 01:
 - Brevity: Stay within Azure limits (24 chars for storage)
 
 **VM Numbering Strategy:**
-- Pooled: 001-010 (10 VMs)
-- Personal: 011-050 (40 VMs)
+- Pooled: `vm-pooled-001` to `vm-pooled-010` (10 VMs)
+- Personal: `vm-personal-011` to `vm-personal-050` (40 VMs)
 - Prevents accidental reuse, tracks capacity at a glance
 
 ---
@@ -158,9 +178,9 @@ Confirm before proceeding to Step 01:
    - `avd-users-pooled` (120 users)
    - `avd-users-personal` (40 users)
    - `avd-users-admin` (5 admins)
-   - `avd-devices-pooled` (dynamic: VM names start with "vm-pool-")
+   - `avd-devices-pooled` (dynamic: VM names start with "vm-pooled-")
    - `avd-devices-personal` (dynamic: VM names start with "vm-personal-")
-   - `avd-devices-all` (dynamic: VM names start with "vm-pool-" or "vm-personal-
+   - `avd-devices-all` (dynamic: VM names start with "vm-pooled-" or "vm-personal-")
 **2. Save naming reference** from table above
 
 **3. Proceed to Step 01:**
